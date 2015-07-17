@@ -1,0 +1,51 @@
+AllCops:
+  Exclude:
+    - tmp/**/*
+    - db/schema.rb
+    - bin/rake
+    - bin/puma
+    - bin/pumactl
+    - spec/spec_helper.rb
+
+Metrics/LineLength:
+  Max: 150
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/WordArray:
+  MinSize: 10
+
+Style/CommentAnnotation:
+  Enabled: false
+
+Style/BracesAroundHashParameters:
+  EnforcedStyle: braces
+
+Style/Documentation:
+  Description: 'Document classes and non-namespace modules.'
+  Enabled: false
+
+Style/Encoding:
+  Description: 'Use UTF-8 as the source file encoding.'
+  Enabled: false
+
+Style/AccessorMethodName:
+  Description: 'Checks for the naming of a method with get_ or set_'
+  Enabled: false
+
+Metrics/MethodLength:
+  CountComments: false  # count full line comments
+  Max: 15
+
+Style/SignalException:
+  Enabled: false
+
+Style/IndentHash:
+  EnforcedStyle: consistent
+
+# if (i_like_ruby_grammar? || have_a_really_long_conditional?)
+#   i_should_be_allowed_to_denote_it!
+# end
+Style/ParenthesesAroundCondition:
+  Enabled: false
