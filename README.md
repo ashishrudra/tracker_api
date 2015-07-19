@@ -1,4 +1,4 @@
-Notification Center
+Groupon Ambassador 
 
 ## Get Up and Going
 
@@ -6,7 +6,7 @@ Notification Center
 bundle install
 bin/rake db:create db:migrate test
 bundle exec rackup
-curl http://localhost:9292/v1/slogan
+curl http://localhost:9292/v1/ambassadors
 ```
 
 
