@@ -1,0 +1,14 @@
+ciPostgres:
+  image: postgres:9.4
+  ports:
+    - "5432"
+
+ci:
+  build: .
+  # sleeping to give time for postgres to come online
+  command: "bash -cex 'sleep 25; sed -i \"/^BUNDLE_WITHOUT: /d\" /usr/local/bundle/config; bundle install --without development deployer; bin/rake db:create db:migrate test --trace'"
+  environment:
+    DATABASE_URL: "postgres://postgres:@ciPostgres/gg_ci"
+    RACK_ENV: "test"
+  links:
+    - ciPostgres

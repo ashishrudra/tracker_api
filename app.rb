@@ -7,8 +7,10 @@ Bundler.setup(:default)
 
 require "app/config"
 
-require "app/GG"
+require "app/gg"
 Bundler.require(:default, GG.env.to_sym)
+
+require "config/initializers/010_dotenv.rb"
 
 Sonoma::ActiveRecord.boot!({ root: GG.root, schema_format: :sql })
 

@@ -7,6 +7,10 @@ describe "V1::Gurus" do
     GG::API::Endpoints
   end
 
+  before(:each) do
+    allow(Sonoma::LocalConfig).to receive(:enabled?).with(:AUTHENTICATION).and_return(true)
+  end
+
   describe "GET /:username", :authenticated_user do
     it "returns guru details when Guru is present" do
       user_uuid = generate_uuid

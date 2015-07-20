@@ -9,7 +9,7 @@ class Client
     end
 
     def find_by(vals = {})
-      data.detect{ |c| c["key"] == vals[:key] }
+      data.detect { |c| c["key"] == vals[:key] }
     end
 
     def first
@@ -27,6 +27,5 @@ class Client
       clients << { "contact_email" => email, "key" => key }
       Sonoma::LocalConfig.write!("clients", { "data" => clients.to_a })
     end
-
   end
 end
