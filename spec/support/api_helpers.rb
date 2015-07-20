@@ -4,7 +4,7 @@ module APIHelpers
   include Rack::Test::Methods
 
   def app
-    GG::API::BUILDER
+    GA::API::BUILDER
   end
 
   def self.included(base)
@@ -40,10 +40,10 @@ module APIHelpers
 end
 
 RSpec.configure do |config|
-  config.include APIHelpers, type: :api
+  config.include APIHelpers, { type: :api }
 
   config.before(:each, :authenticated_user) do
     Client.create!
-    header("Authorization", "GGV1 #{Client.first["key"]}")
+    header("Authorization", "GGV1 #{Client.first['key']}")
   end
 end

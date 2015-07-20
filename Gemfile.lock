@@ -1,31 +1,31 @@
 GIT
-  remote: git@github.groupondev.com:sonoma/sonoma-activerecord.git
+  remote: https://github.groupondev.com/sonoma/sonoma-activerecord.git
   revision: 2e049ec3084c94d8e4dc2c2eef7c262f47c08c3a
   specs:
     sonoma-activerecord (0.0.2)
       activerecord (~> 4.2.0)
 
 GIT
-  remote: git@github.groupondev.com:sonoma/sonoma-authentication.git
+  remote: https://github.groupondev.com/sonoma/sonoma-authentication.git
   revision: 9fc707ed6207d81d822fa40eef8742138521fe2f
   specs:
     sonoma-authentication (0.0.1)
       rack (~> 1.6)
 
 GIT
-  remote: git@github.groupondev.com:sonoma/sonoma-colorizer.git
+  remote: https://github.groupondev.com/sonoma/sonoma-colorizer.git
   revision: 5a91f14d340867d2f289005062074fe1a13e1845
   specs:
     sonoma-colorizer (0.0.1)
 
 GIT
-  remote: git@github.groupondev.com:sonoma/sonoma-dottablehash.git
+  remote: https://github.groupondev.com/sonoma/sonoma-dottablehash.git
   revision: a8c1d1721679d1620a4efaf49953efb0315b3434
   specs:
     sonoma-dottablehash (0.0.1)
 
 GIT
-  remote: git@github.groupondev.com:sonoma/sonoma-local-config.git
+  remote: https://github.groupondev.com/sonoma/sonoma-local-config.git
   revision: cce6f8ac108ba32ff7889bb4a389b72c9ee30e9c
   specs:
     sonoma-local-config (0.0.2)
@@ -36,35 +36,26 @@ GIT
       tilt
 
 GIT
-  remote: git@github.groupondev.com:sonoma/sonoma-logger.git
-  revision: 08e4eac59ae12da979cdf02468a0d3d1b7ba76ef
-  specs:
-    sonoma-logger (0.6.1)
-      multi_json (~> 1.0)
-      rack (~> 1)
-      steno_logger (~> 0.3)
-
-GIT
-  remote: git@github.groupondev.com:sonoma/sonoma-monitor.git
+  remote: https://github.groupondev.com/sonoma/sonoma-monitor.git
   revision: 9ec35530385cd8459e2684932574bbf79f85e3bf
   specs:
     sonoma-monitor (0.2.2)
       rack (~> 1)
 
 GIT
-  remote: git@github.groupondev.com:sonoma/sonoma-request-id.git
+  remote: https://github.groupondev.com/sonoma/sonoma-remote.git
+  revision: f09af5980938e2a45dae53857a7719d109d85ef5
+  specs:
+    sonoma-remote (0.0.1)
+      capistrano (>= 3.4.0)
+      hipchat
+
+GIT
+  remote: https://github.groupondev.com/sonoma/sonoma-request-id.git
   revision: 5265c69431331b596b711f1b13e71fd1406e2fe4
   specs:
     sonoma-request-id (0.0.1)
       rack (~> 1)
-
-GIT
-  remote: git@github.groupondev.com:steno/steno_ruby.git
-  revision: 60eaf21cbc6543753b6197a1697837ec7132d9c6
-  specs:
-    steno_logger (0.6.1)
-      json
-      uuidtools
 
 GEM
   remote: https://rubygems.org/
@@ -97,8 +88,13 @@ GEM
       thor (~> 0.18)
     byebug (4.0.5)
       columnize (= 0.9.0)
+    capistrano (3.4.0)
+      i18n
+      rake (>= 10.0.0)
+      sshkit (~> 1.3)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
+    colorize (0.7.7)
     columnize (0.9.0)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
@@ -123,12 +119,22 @@ GEM
       rack-mount
       virtus (>= 1.0.0)
     hashie (3.4.1)
+    hipchat (1.5.2)
+      httparty
+      mimemagic
+    httparty (0.13.5)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
     i18n (0.7.0)
     ice_nine (0.11.1)
     json (1.8.2)
+    mimemagic (0.3.0)
     minitest (5.6.0)
     multi_json (1.11.0)
     multi_xml (0.5.5)
+    net-scp (1.2.1)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.9.2)
     parser (2.2.2.0)
       ast (>= 1.1, < 3.0)
     pg (0.18.1)
@@ -167,6 +173,10 @@ GEM
     safe_yaml (1.0.4)
     shotgun (0.9.1)
       rack (>= 1.0)
+    sshkit (1.7.1)
+      colorize (>= 0.7.0)
+      net-scp (>= 1.1.2)
+      net-ssh (>= 2.8.0)
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (2.0.1)
@@ -189,6 +199,7 @@ DEPENDENCIES
   activerecord (~> 4.2.0)
   bundler-audit
   byebug
+  capistrano (= 3.4.0)
   database_cleaner (~> 1.4.1)
   dotenv
   factory_girl
@@ -205,8 +216,8 @@ DEPENDENCIES
   sonoma-colorizer!
   sonoma-dottablehash!
   sonoma-local-config!
-  sonoma-logger!
   sonoma-monitor!
+  sonoma-remote!
   sonoma-request-id!
-  steno_logger!
+  uuidtools
   webmock

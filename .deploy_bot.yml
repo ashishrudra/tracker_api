@@ -1,0 +1,30 @@
+uat:
+  deployment_repo: git@github.groupondev.com:gurus/groupon_gurus
+  deployment_setup: >
+    bundle install
+    --without development test
+    --path .bundle
+  deployment_command: >
+    REVISION=GIT_SHA_TO_DEPLOY
+    bundle exec cap uat deploy:app
+
+staging:
+  deployment_repo: git@github.groupondev.com:gurus/groupon_gurus
+  deployment_setup: >
+    bundle install
+    --without development test
+    --path .bundle
+  deployment_command: >
+    REVISION=GIT_SHA_TO_DEPLOY
+    bundle exec cap staging deploy:app
+
+production:
+  deployment_repo: git@github.groupondev.com:gurus/groupon_gurus
+  deployment_setup: >
+    bundle install
+    --without development test
+    --path .bundle
+  deployment_command: >
+    DOCKER_REGISTRY=docker.groupondev.com
+    REVISION=GIT_SHA_TO_DEPLOY
+    bundle exec cap production deploy:app
