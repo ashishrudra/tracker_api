@@ -44,30 +44,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: ambassador_deals; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE ambassador_deals (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    deal_id uuid NOT NULL,
-    ambassador_id uuid NOT NULL
-);
-
-
---
--- Name: ambassadors; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE ambassadors (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    user_uuid uuid NOT NULL,
-    email text NOT NULL,
-    username text NOT NULL
-);
-
-
---
 -- Name: deals; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -85,8 +61,32 @@ CREATE TABLE deals (
 
 CREATE TABLE followers (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    ambassador_id uuid NOT NULL,
+    guru_id uuid NOT NULL,
     user_uuid uuid NOT NULL,
+    username text NOT NULL
+);
+
+
+--
+-- Name: guru_deals; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE guru_deals (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    deal_id uuid NOT NULL,
+    guru_id uuid NOT NULL
+);
+
+
+--
+-- Name: gurus; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE gurus (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    user_uuid uuid NOT NULL,
+    email text NOT NULL,
     username text NOT NULL
 );
 
@@ -98,22 +98,6 @@ CREATE TABLE followers (
 CREATE TABLE schema_migrations (
     version character varying NOT NULL
 );
-
-
---
--- Name: ambassador_deals_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY ambassador_deals
-    ADD CONSTRAINT ambassador_deals_pkey PRIMARY KEY (id);
-
-
---
--- Name: ambassadors_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY ambassadors
-    ADD CONSTRAINT ambassadors_pkey PRIMARY KEY (id);
 
 
 --
@@ -130,6 +114,22 @@ ALTER TABLE ONLY deals
 
 ALTER TABLE ONLY followers
     ADD CONSTRAINT followers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: guru_deals_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY guru_deals
+    ADD CONSTRAINT guru_deals_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: gurus_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY gurus
+    ADD CONSTRAINT gurus_pkey PRIMARY KEY (id);
 
 
 --

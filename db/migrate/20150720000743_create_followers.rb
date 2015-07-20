@@ -1,7 +1,7 @@
 class CreateFollowers < ActiveRecord::Migration
   def up
     create_table :followers, { id: :uuid } do |t|
-      t.uuid(:ambassador_id, { null: false })
+      t.uuid(:guru_id, { null: false })
       t.uuid(:user_uuid, { null: false })
       t.text(:username, { null: false })
     end

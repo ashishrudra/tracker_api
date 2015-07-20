@@ -1,4 +1,4 @@
-Groupon Ambassador 
+Groupon Guru
 
 ## Get Up and Going
 
@@ -6,7 +6,7 @@ Groupon Ambassador
 bundle install
 bin/rake db:create db:migrate test
 bundle exec rackup
-curl http://localhost:9292/v1/ambassadors
+curl http://localhost:9292/v1/gurus
 ```
 
 

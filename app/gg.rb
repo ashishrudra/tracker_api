@@ -1,4 +1,4 @@
-module GA
+module GG
   class << self
     def root
       @_root ||= File.expand_path("../../", __FILE__)
