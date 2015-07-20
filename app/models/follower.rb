@@ -1,7 +1,7 @@
 class Follower < ActiveRecord::Base
-  validates(:ambassador_id, { presence: true })
+  validates(:guru_id, { presence: true })
   validates(:user_uuid, { presence: true })
   validates(:username, { presence: true })
 
-  belongs_to :ambassador
+  belongs_to :guru
 end

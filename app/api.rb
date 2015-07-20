@@ -1,9 +1,9 @@
 require "app/api/v1"
 
-module GA
+module GG
   module API
     class Endpoints < Grape::API
-      mount({ GA::API::V1::Endpoints => :v1 })
+      mount({ GG::API::V1::Endpoints => :v1 })
     end
   end
 end
