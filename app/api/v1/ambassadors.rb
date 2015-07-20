@@ -12,7 +12,8 @@ module GA
         end
 
         get "/:username" do
-          Ambassador.find params[:username]
+          ambassador = Ambassador.find_by_username params[:username]
+          Presenters::AmbassadorPresenter.new(ambassador).present
         end
       end
     end

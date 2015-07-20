@@ -11,11 +11,12 @@ module GA
 
           def present
             {
-              uuid: ambassador.id,
-              username: ambassador.username,
-              user_uuid: ambassador.user_uuid,
+              deals: present_deals,
+              email: ambassador.email,
               followers_count: ambassador.followers.count,
-              deals: present_deals
+              user_uuid: ambassador.user_uuid,
+              username: ambassador.username,
+              uuid: ambassador.id,
             }
           end
 
@@ -24,7 +25,8 @@ module GA
           def present_deals
             ambassador.deals.collect do |deal|
               {
-                uuid: deal.uuid
+                uuid: deal.id,
+                permalink: deal.permalink
               }
             end
           end
