@@ -7,7 +7,7 @@ describe "V1::Gurus" do
     GG::API::Endpoints
   end
 
-  describe "/:username" do
+  describe " GET /:username" do
     it "returns guru details when Guru is present" do
       user_uuid = generate_uuid
       guru = Guru.create!({ username: "johndoe",
@@ -49,7 +49,7 @@ describe "V1::Gurus" do
     end
   end
 
-  describe "/" do
+  describe "GET /" do
     it "returns array of gurus" do
       gurus_count = rand(10)
 
@@ -62,6 +62,31 @@ describe "V1::Gurus" do
       get("v1/gurus.json")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(gurus_count)
+    end
+  end
+
+  describe "POST /", :authenticated_user do
+    it "creates a guru" do
+      user_name = rand.to_s[2..20]
+      params = {
+        username: user_name,
+        user_uuid: generate_uuid,
+        email: rand.to_s[2..20]
+      }
+
+      expect { post "/v1/gurus", params.to_json }.to change(Guru, :count).by(1)
+
+      guru = Guru.find_by_username(user_name)
+      expect(guru.user_uuid).to eq(params[:user_uuid])
+      expect(guru.email).to eq(params[:email])
+    end
+
+    it "raises 400 if inputs are not valid/missing" do
+      params = { email: "hello@mail.com" }
+
+      post "v1/gurus", params.to_json
+
+      expect(last_response.status).to eq(400)
     end
   end
 end
