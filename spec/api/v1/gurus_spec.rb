@@ -7,7 +7,7 @@ describe "V1::Gurus" do
     GG::API::Endpoints
   end
 
-  describe " GET /:username" do
+  describe "GET /:username", :authenticated_user do
     it "returns guru details when Guru is present" do
       user_uuid = generate_uuid
       guru = Guru.create!({ username: "johndoe",
@@ -48,7 +48,15 @@ describe "V1::Gurus" do
     end
   end
 
-  describe "GET /" do
+  context "GET /v1/markup_schedules", "when not authenticated" do
+    it "returns a 401 error" do
+      get("v1/gurus.json")
+
+      expect_unauthorized_response
+    end
+  end
+
+  describe "GET /", :authenticated_user do
     it "returns array of gurus" do
       gurus_count = rand(10)
 
@@ -63,7 +71,7 @@ describe "V1::Gurus" do
     end
   end
 
-  describe "POST /" do
+  describe "POST /", :authenticated_user do
     it "creates a guru" do
       user_name = rand.to_s[2..20]
       params = {
