@@ -12,7 +12,6 @@ module GG
           def present
             {
               deals: present_deals,
-              email: guru.email,
               followers_count: guru.followers.count,
               user_uuid: guru.user_uuid,
               username: guru.username,

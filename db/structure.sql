@@ -56,18 +56,6 @@ CREATE TABLE deals (
 
 
 --
--- Name: followers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE followers (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    guru_id uuid NOT NULL,
-    user_uuid uuid NOT NULL,
-    username text NOT NULL
-);
-
-
---
 -- Name: guru_deals; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -109,14 +97,6 @@ ALTER TABLE ONLY deals
 
 
 --
--- Name: followers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY followers
-    ADD CONSTRAINT followers_pkey PRIMARY KEY (id);
-
-
---
 -- Name: guru_deals_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -152,6 +132,4 @@ INSERT INTO schema_migrations (version) VALUES ('20150717000741');
 INSERT INTO schema_migrations (version) VALUES ('20150720000741');
 
 INSERT INTO schema_migrations (version) VALUES ('20150720000742');
-
-INSERT INTO schema_migrations (version) VALUES ('20150720000743');
 

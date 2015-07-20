@@ -19,12 +19,10 @@ module GG
         params do
           requires :username, { allow_blank: false }
           requires :user_uuid, { regexp: UUID::REGEX }
-          requires :email, { allow_blank: false }
         end
 
         post "/" do
-          Guru.create!({ email: params.email,
-                         username: params.username,
+          Guru.create!({ username: params.username,
                          user_uuid: params.user_uuid }
                       )
         end

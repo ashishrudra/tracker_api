@@ -11,8 +11,8 @@ describe "V1::Gurus" do
     it "returns guru details when Guru is present" do
       user_uuid = generate_uuid
       guru = Guru.create!({ username: "johndoe",
-                            user_uuid: user_uuid,
-                            email: "johndoe@groupon.com" })
+                            user_uuid: user_uuid
+                          })
 
       followers_count = rand(10)
 
@@ -36,7 +36,6 @@ describe "V1::Gurus" do
 
       expect(last_response.status).to eq(200)
       expect(response_json[:uuid]).to eq(guru.id)
-      expect(response_json[:email]).to eq("johndoe@groupon.com")
       expect(response_json[:user_uuid]).to eq(user_uuid)
       expect(response_json[:followers_count]).to eq(followers_count)
       expect(response_json[:deals].count).to be(deals_count)
@@ -55,8 +54,7 @@ describe "V1::Gurus" do
 
       gurus_count.times do
         Guru.create!({ username: rand.to_s[1..10],
-                       user_uuid: generate_uuid,
-                       email: "johndoe@groupon.com" })
+                       user_uuid: generate_uuid })
       end
 
       get("v1/gurus.json")
@@ -65,26 +63,22 @@ describe "V1::Gurus" do
     end
   end
 
-  describe "POST /", :authenticated_user do
+  describe "POST /" do
     it "creates a guru" do
       user_name = rand.to_s[2..20]
       params = {
         username: user_name,
-        user_uuid: generate_uuid,
-        email: rand.to_s[2..20]
+        user_uuid: generate_uuid
       }
 
       expect { post "/v1/gurus", params.to_json }.to change(Guru, :count).by(1)
 
       guru = Guru.find_by_username(user_name)
       expect(guru.user_uuid).to eq(params[:user_uuid])
-      expect(guru.email).to eq(params[:email])
     end
 
     it "raises 400 if inputs are not valid/missing" do
-      params = { email: "hello@mail.com" }
-
-      post "v1/gurus", params.to_json
+      post "v1/gurus"
 
       expect(last_response.status).to eq(400)
     end
