@@ -15,6 +15,17 @@ module GG
           guru = Guru.find_by_username params[:username]
           Presenters::GuruPresenter.new(guru).present
         end
+
+        params do
+          requires :username, { allow_blank: false }
+          requires :user_uuid, { regexp: UUID::REGEX }
+        end
+
+        post "/" do
+          Guru.create!({ username: params.username,
+                         user_uuid: params.user_uuid }
+                      )
+        end
       end
     end
   end
