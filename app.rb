@@ -5,6 +5,8 @@ ENV["RACK_ENV"] ||= "development"
 require "bundler/setup"
 Bundler.setup(:default)
 
+require "app/config"
+
 require "app/GG"
 Bundler.require(:default, GG.env.to_sym)
 

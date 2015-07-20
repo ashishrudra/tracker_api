@@ -16,6 +16,7 @@ gem "sonoma-activerecord", { groupon: "sonoma/sonoma-activerecord" }
 gem "sonoma-authentication", { groupon: "sonoma/sonoma-authentication" }
 gem "sonoma-colorizer", { groupon: "sonoma/sonoma-colorizer" }
 gem "sonoma-dottablehash", { groupon: "sonoma/sonoma-dottablehash" }
+gem "sonoma-local-config", { groupon: "sonoma/sonoma-local-config" }
 gem "sonoma-logger", { groupon: "sonoma/sonoma-logger", require: "sonoma_logger" }
 gem "sonoma-monitor", { groupon: "sonoma/sonoma-monitor", require: "sonoma_monitor" }
 gem "sonoma-request-id", { groupon: "sonoma/sonoma-request-id" }

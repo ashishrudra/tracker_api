@@ -25,6 +25,17 @@ GIT
     sonoma-dottablehash (0.0.1)
 
 GIT
+  remote: git@github.groupondev.com:sonoma/sonoma-local-config.git
+  revision: cce6f8ac108ba32ff7889bb4a389b72c9ee30e9c
+  specs:
+    sonoma-local-config (0.0.2)
+      cuba
+      json
+      rack
+      sonoma-dottablehash
+      tilt
+
+GIT
   remote: git@github.groupondev.com:sonoma/sonoma-logger.git
   revision: 08e4eac59ae12da979cdf02468a0d3d1b7ba76ef
   specs:
@@ -91,6 +102,8 @@ GEM
     columnize (0.9.0)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
+    cuba (3.4.0)
+      rack
     database_cleaner (1.4.1)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
@@ -156,6 +169,7 @@ GEM
       rack (>= 1.0)
     thor (0.19.1)
     thread_safe (0.3.5)
+    tilt (2.0.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     uuidtools (2.1.5)
@@ -190,6 +204,7 @@ DEPENDENCIES
   sonoma-authentication!
   sonoma-colorizer!
   sonoma-dottablehash!
+  sonoma-local-config!
   sonoma-logger!
   sonoma-monitor!
   sonoma-request-id!
