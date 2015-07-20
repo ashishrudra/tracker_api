@@ -8,7 +8,6 @@ Bundler.setup(:default)
 require "app/ga"
 Bundler.require(:default, GA.env.to_sym)
 
-
 Sonoma::ActiveRecord.boot!({ root: GA.root, schema_format: :sql })
 
 support_directories = %w(app/models config/initializers lib)

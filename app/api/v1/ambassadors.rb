@@ -3,11 +3,16 @@ module GA
     module V1
       class Ambassadors < Grape::API
         get "/" do
-          Ambassador.all
+          ambassadors = Ambassador.all
+
+          { ambassadors: ambassadors.each do |ambassador|
+            Presenters::AmbassadorPresenter.new(ambassador).present
+          end
+          }
         end
 
-        get "/:uuid" do
-          Ambassador.find params[:uuid]
+        get "/:username" do
+          Ambassador.find params[:username]
         end
       end
     end

@@ -29,3 +29,11 @@ group :development, :test do
   gem "rubocop"
   gem "shotgun"
 end
+
+group :test do
+  gem "database_cleaner", "~> 1.4.1"
+  gem "factory_girl"
+  gem "rack-test"
+  gem "rspec"
+  gem "webmock"
+end

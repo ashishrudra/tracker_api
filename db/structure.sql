@@ -44,14 +44,50 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: ambassador_deals; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE ambassador_deals (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    deal_id uuid NOT NULL,
+    ambassador_id uuid NOT NULL
+);
+
+
+--
 -- Name: ambassadors; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE ambassadors (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    customer_uuid uuid NOT NULL,
-    email text NOT NULL
+    user_uuid uuid NOT NULL,
+    email text NOT NULL,
+    username text NOT NULL
+);
+
+
+--
+-- Name: deals; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE deals (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    permalink text NOT NULL,
+    deal_uuid uuid NOT NULL
+);
+
+
+--
+-- Name: followers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE followers (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    ambassador_id uuid NOT NULL,
+    user_uuid uuid NOT NULL,
+    username text NOT NULL
 );
 
 
@@ -65,11 +101,35 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: ambassador_deals_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY ambassador_deals
+    ADD CONSTRAINT ambassador_deals_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: ambassadors_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY ambassadors
     ADD CONSTRAINT ambassadors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: deals_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY deals
+    ADD CONSTRAINT deals_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: followers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY followers
+    ADD CONSTRAINT followers_pkey PRIMARY KEY (id);
 
 
 --
@@ -88,4 +148,10 @@ SET search_path TO "$user",public;
 INSERT INTO schema_migrations (version) VALUES ('20150204000741');
 
 INSERT INTO schema_migrations (version) VALUES ('20150717000741');
+
+INSERT INTO schema_migrations (version) VALUES ('20150720000741');
+
+INSERT INTO schema_migrations (version) VALUES ('20150720000742');
+
+INSERT INTO schema_migrations (version) VALUES ('20150720000743');
 
