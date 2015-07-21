@@ -49,3 +49,6 @@ Style/IndentHash:
 # end
 Style/ParenthesesAroundCondition:
   Enabled: false
+
+Style/EachWithObject:
+  Enabled: false

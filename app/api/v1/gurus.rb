@@ -13,23 +13,29 @@ module GG
 
         get "/:username" do
           guru = Guru.find_by_username!(params[:username])
-          Presenters::GuruPresenter.new(guru).present
+          { guru: Presenters::GuruPresenter.new(guru).present }
         end
 
         params do
-          requires :username, { allow_blank: false }
-          requires :user_uuid, { regexp: UUID::REGEX }
+          requires :guru, { type: Hash } do
+            requires :username, { allow_blank: false }
+            requires :userUuid, { regexp: UUID::REGEX }
+          end
         end
 
         post "/" do
-          Guru.create!({ username: params.username,
-                         user_uuid: params.user_uuid }
-                      )
+          declared_params = declared(params)[:guru]
+          guru_params = declared_params.inject({}) do |result, (k, v)|
+            result[k.to_s.underscore.to_sym] = v
+            result
+          end
+
+          Guru.create!(guru_params)
         end
 
         params do
           requires :username, { allow_blank: false }
-          requires :permalink, { allow_blank: false }
+          requires :dealUri, { allow_blank: false }
         end
 
         post "/:username/deals" do
@@ -38,12 +44,20 @@ module GG
 
         params do
           requires :username, { allow_blank: false }
-          requires :follower_username, { allow_blank: false }
-          requires :follower_uuid, { regexp: UUID::REGEX }
+          requires :follower, { type: Hash } do
+            requires :username, { allow_blank: false }
+            requires :userUuid, { regexp: UUID::REGEX }
+          end
         end
 
         post "/:username/followers" do
-          Guru.add_follower(params)
+          declared_params = declared(params)[:follower]
+          follower_params = declared_params.inject({}) do |result, (k, v)|
+            result[k.to_s.underscore.to_sym] = v
+            result
+          end
+
+          Guru.add_follower(params[:username], follower_params)
         end
       end
     end

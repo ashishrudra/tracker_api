@@ -1,4 +1,4 @@
-class DealData
+class DealCatalogData
   DEAL_NOT_FOUND = "Deal is not present for permalink %s"
   class << self
     def get_deal_uuid(permalink)

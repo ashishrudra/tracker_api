@@ -10,17 +10,18 @@ class Guru < ActiveRecord::Base
   class << self
     def add_deal(params)
       guru = Guru.find_by_username!(params[:username])
-      deal_uuid = DealData.get_deal_uuid(params[:permalink])
+      permalink = DealHelper.get_permalink_from_uri(params[:dealUri])
+      deal_uuid = DealCatalogData.get_deal_uuid(permalink)
 
       guru.deals << Deal.find_or_create_by!({ deal_uuid: deal_uuid,
-                                              permalink: params[:permalink] })
+                                              permalink: permalink
+                                            })
     end
 
-    def add_follower(params)
-      guru = Guru.find_by_username!(params[:username])
+    def add_follower(username, follower_params)
+      guru = Guru.find_by_username!(username)
 
-      guru.followers << Follower.find_or_create_by!({ user_uuid: params[:follower_uuid],
-                                                      username: params[:follower_username] })
+      guru.followers << Follower.find_or_create_by!(follower_params)
     end
   end
 end

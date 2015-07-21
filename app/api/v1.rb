@@ -2,6 +2,7 @@ require "app/api/v1/gurus"
 require "app/api/v1/followers"
 require "app/api/v1/presenters"
 require "app/api/v1/helpers/error_handler"
+require "app/api/v1/helpers/deal_helper"
 
 module GG
   module API

@@ -10,7 +10,7 @@ describe "V1::Gurus" do
   def create_guru(explicit_params = {})
     Guru.create!({ username: rand.to_s[2..20],
                    user_uuid: generate_uuid
-                 }.merge!(explicit_params))
+    }.merge!(explicit_params))
   end
 
   before(:each) do
@@ -44,10 +44,11 @@ describe "V1::Gurus" do
       get("v1/gurus/#{guru.username}.json")
 
       expect(last_response.status).to eq(200)
-      expect(response_json[:uuid]).to eq(guru.id)
-      expect(response_json[:user_uuid]).to eq(user_uuid)
-      expect(response_json[:followers_count]).to eq(followers_count)
-      expect(response_json[:deals].count).to be(deals_count)
+      guru_response = response_json[:guru]
+      expect(guru_response[:uuid]).to eq(guru.id)
+      expect(guru_response[:user_uuid]).to eq(user_uuid)
+      expect(guru_response[:followers_count]).to eq(followers_count)
+      expect(guru_response[:deals].count).to be(deals_count)
     end
 
     it "returns 404 when guru is not present" do
@@ -82,15 +83,17 @@ describe "V1::Gurus" do
   describe "POST /", :authenticated_user do
     it "creates a guru" do
       user_name = rand.to_s[2..20]
-      params = {
-        username: user_name,
-        user_uuid: generate_uuid
+      params = { guru:
+                 {
+                   username: user_name,
+                   userUuid: generate_uuid
+                 }
       }
 
       expect { post "/v1/gurus", params.to_json }.to change(Guru, :count).by(1)
 
       guru = Guru.find_by_username(user_name)
-      expect(guru.user_uuid).to eq(params[:user_uuid])
+      expect(guru.user_uuid).to eq(params[:guru][:userUuid])
     end
 
     it "raises 400 if inputs are not valid/missing" do
@@ -101,57 +104,58 @@ describe "V1::Gurus" do
   end
 
   describe "POST /:username/deals", :authenticated_user do
+    before(:each) do
+      @permalink = rand.to_s[2..15]
+      deal_uri = "www.groupon.com/deals/#{@permalink}"
+      @params = { dealUri: deal_uri }
+    end
     it "adds deal to guru" do
       user_name = rand.to_s[2..20]
       create_guru({ username: user_name })
 
-      params = { permalink: rand.to_s[2..40] }
-
       deal_uuid = generate_uuid
-      allow(Clients::DealCatalog).to receive(:get_deal).with(params[:permalink]).and_return({ deal: { id: deal_uuid } })
+      allow(Clients::DealCatalog).to receive(:get_deal).with(@permalink).and_return({ deal: { id: deal_uuid } })
 
-      expect { post "/v1/gurus/#{user_name}/deals", params.to_json }.to change(Deal, :count).by(1)
+      expect { post "/v1/gurus/#{user_name}/deals", @params.to_json }.to change(Deal, :count).by(1)
 
       guru = Guru.find_by_username(user_name)
       expect(guru.deals.count).to eq(1)
       deal = guru.deals[0]
-      expect(deal.permalink).to eq(params[:permalink])
+      expect(deal.permalink).to eq(@permalink)
       expect(deal.deal_uuid).to eq(deal_uuid)
     end
 
     it "does not create new deal record if its already exists" do
-      permalink = "a-permalink"
       deal_uuid = generate_uuid
       guru1 = create_guru
       guru1.deals << Deal.create!({ deal_uuid: deal_uuid,
-                                    permalink: permalink })
+                                    permalink: @permalink })
 
       guru2 = create_guru
-      allow(Clients::DealCatalog).to receive(:get_deal).with(permalink).and_return({ deal: { id: deal_uuid } })
-      expect { post "/v1/gurus/#{guru2.username}/deals", { permalink: permalink }.to_json }.to change(Deal, :count).by(0)
+      allow(Clients::DealCatalog).to receive(:get_deal).with(@permalink).and_return({ deal: { id: deal_uuid } })
+      expect { post "/v1/gurus/#{guru2.username}/deals", @params.to_json }.to change(Deal, :count).by(0)
 
       expect(Deal.count).to eq(1)
       deal = guru2.deals[0]
-      expect(deal.permalink).to eq(permalink)
+      expect(deal.permalink).to eq(@permalink)
       expect(deal.deal_uuid).to eq(deal_uuid)
     end
 
     it "raises 404 if guru is not present" do
-      post "v1/gurus/:random/deals", { permalink: "a-permalink" }.to_json
+      post "v1/gurus/:random/deals", @params.to_json
 
       expect(last_response.status).to eq(404)
     end
 
     it "raises 400 if deal data is not present in Deal Catalog" do
       user_name = rand.to_s[2..20]
-      permalink = "a-permalink"
       create_guru({ username: user_name })
 
       allow(Clients::DealCatalog).to receive(:get_deal).and_return({})
-      post "v1/gurus/#{user_name}/deals", { permalink: permalink }.to_json
+      post "v1/gurus/#{user_name}/deals", @params.to_json
 
       expect(last_response.status).to eq(400)
-      expect(response_json[:errors].first[:message]).to eq("Deal is not present for permalink #{permalink}")
+      expect(response_json[:errors].first[:message]).to eq("Deal is not present for permalink #{@permalink}")
     end
   end
 
@@ -160,8 +164,10 @@ describe "V1::Gurus" do
       user_name = rand.to_s[2..20]
       create_guru({ username: user_name })
 
-      params = { follower_username: rand.to_s[2..40],
-                 follower_uuid: generate_uuid
+      params = { follower:
+                 { username: rand.to_s[2..40],
+                   userUuid: generate_uuid
+      }
       }
 
       expect { post "/v1/gurus/#{user_name}/followers", params.to_json }.to change(Follower, :count).by(1)
@@ -169,13 +175,15 @@ describe "V1::Gurus" do
       guru = Guru.find_by_username(user_name)
       expect(guru.followers.count).to eq(1)
       follower = guru.followers[0]
-      expect(follower.username).to eq(params[:follower_username])
-      expect(follower.user_uuid).to eq(params[:follower_uuid])
+      expect(follower.username).to eq(params[:follower][:username])
+      expect(follower.user_uuid).to eq(params[:follower][:userUuid])
     end
 
     it "raises 404 if guru is not present" do
-      params = { follower_username: rand.to_s[2..40],
-                 follower_uuid: generate_uuid
+      params = { follower: {
+        username: rand.to_s[2..40],
+        userUuid: generate_uuid
+      }
       }
       post "v1/gurus/:random/followers", params.to_json
 
