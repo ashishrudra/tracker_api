@@ -46,8 +46,8 @@ describe "V1::Gurus" do
       expect(last_response.status).to eq(200)
       guru_response = response_json[:guru]
       expect(guru_response[:uuid]).to eq(guru.id)
-      expect(guru_response[:user_uuid]).to eq(user_uuid)
-      expect(guru_response[:followers_count]).to eq(followers_count)
+      expect(guru_response[:userUuid]).to eq(user_uuid)
+      expect(guru_response[:followersCount]).to eq(followers_count)
       expect(guru_response[:deals].count).to be(deals_count)
     end
 

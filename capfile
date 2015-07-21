@@ -29,6 +29,6 @@ Sonoma::Remote.configure!({
   hipchat_token: "IeKYgW4T2v4Uham9DSUasNEoy87cnuRjT9sBeEA7",
   load_balancer_delay: 3,
   server_boot_time: 6,
-  user: "sre_deploy",
+  user: "arudra",
   verify: verify
 })

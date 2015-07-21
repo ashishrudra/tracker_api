@@ -28,8 +28,8 @@ gem "dotenv"
 group :development, :test do
   gem "bundler-audit"
   gem "byebug"
-  gem "rubocop"
   gem "shotgun"
+  gem "rubocop"
 end
 
 group :test do

@@ -5,7 +5,7 @@ module GG
         get "/" do
           gurus = Guru.all
 
-          { gurus: gurus.each do |guru|
+          { gurus: gurus.map do |guru|
             Presenters::GuruPresenter.new(guru).present
           end
           }
