@@ -1,4 +1,4 @@
-Groupon Guru
+Groupon Gurus
 
 ## Get Up and Going
 
