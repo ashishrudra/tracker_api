@@ -20,6 +20,8 @@ gem "sonoma-dottablehash", { git: groupon_path("sonoma/sonoma-dottablehash") }
 gem "sonoma-monitor", { git: groupon_path("sonoma/sonoma-monitor"), require: "sonoma_monitor" }
 gem "sonoma-request-id", { git: groupon_path("sonoma/sonoma-request-id") }
 gem "sonoma-local-config", { git: groupon_path("sonoma/sonoma-local-config") }
+gem "service_discovery_client", { git: groupon_path("geoff/service_discovery_client") }
+gem "typhoeus", "~> 0.7.1"
 gem "uuidtools"
 gem "dotenv"
 

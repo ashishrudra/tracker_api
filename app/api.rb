@@ -1,4 +1,5 @@
 require "app/api/v1"
+require "app/errors"
 
 module GG
   module API

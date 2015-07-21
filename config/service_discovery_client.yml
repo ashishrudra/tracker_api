@@ -1,0 +1,7 @@
+log_request_body: true
+log_response_body: true
+services:
+  deal-catalog:
+    params:
+      clientId: <%= GG::Config.data("DEAL_CATALOG_CLIENT_ID") %>
+    baseUrl: <%= GG::Config.data("DEAL_CATALOG_BASE_URL") %>

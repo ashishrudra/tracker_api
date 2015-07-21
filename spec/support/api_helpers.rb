@@ -4,7 +4,7 @@ module APIHelpers
   include Rack::Test::Methods
 
   def app
-    GA::API::BUILDER
+    GG::API::BUILDER
   end
 
   def self.included(base)
