@@ -1,7 +1,7 @@
 class Follower < ActiveRecord::Base
-  validates(:guru_id, { presence: true })
   validates(:user_uuid, { presence: true })
   validates(:username, { presence: true })
 
-  belongs_to :guru
+  has_many :guru_followers
+  has_many :gurus, { through: :guru_followers }
 end
