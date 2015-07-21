@@ -29,14 +29,14 @@ describe "V1::Followers" do
         follower.gurus << create_guru
       end
 
-      get("v1/followers/#{follower_uuid}/gurus.json")
+      get("gurus_api/v1/followers/#{follower_uuid}/gurus.json")
 
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(guru_count)
     end
 
     it "returns 404 when follower is not present" do
-      get("v1/followers/#{generate_uuid}/gurus.json")
+      get("gurus_api/v1/followers/#{generate_uuid}/gurus.json")
 
       expect(last_response.status).to eq(404)
     end

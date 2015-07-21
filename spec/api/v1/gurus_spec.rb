@@ -41,7 +41,7 @@ describe "V1::Gurus" do
         guru.deals << deal
       end
 
-      get("v1/gurus/#{guru.username}.json")
+      get("gurus_api/v1/gurus/#{guru.username}.json")
 
       expect(last_response.status).to eq(200)
       guru_response = response_json[:guru]
@@ -52,15 +52,15 @@ describe "V1::Gurus" do
     end
 
     it "returns 404 when guru is not present" do
-      get("v1/gurus/noname.json")
+      get("gurus_api/v1/gurus/noname.json")
 
       expect(last_response.status).to eq(404)
     end
   end
 
-  context "GET /v1/markup_schedules", "when not authenticated" do
+  context "GET /gurus_api/v1/markup_schedules", "when not authenticated" do
     it "returns a 401 error" do
-      get("v1/gurus.json")
+      get("gurus_api/v1/gurus.json")
 
       expect_unauthorized_response
     end
@@ -74,7 +74,7 @@ describe "V1::Gurus" do
         create_guru
       end
 
-      get("v1/gurus.json")
+      get("gurus_api/v1/gurus.json")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(gurus_count)
     end
@@ -90,14 +90,14 @@ describe "V1::Gurus" do
                  }
       }
 
-      expect { post "/v1/gurus", params.to_json }.to change(Guru, :count).by(1)
+      expect { post "/gurus_api/v1/gurus", params.to_json }.to change(Guru, :count).by(1)
 
       guru = Guru.find_by_username(user_name)
       expect(guru.user_uuid).to eq(params[:guru][:userUuid])
     end
 
     it "raises 400 if inputs are not valid/missing" do
-      post "v1/gurus"
+      post "gurus_api/v1/gurus"
 
       expect(last_response.status).to eq(400)
     end
@@ -116,7 +116,7 @@ describe "V1::Gurus" do
       deal_uuid = generate_uuid
       allow(Clients::DealCatalog).to receive(:get_deal).with(@permalink).and_return({ deal: { id: deal_uuid } })
 
-      expect { post "/v1/gurus/#{user_name}/deals", @params.to_json }.to change(Deal, :count).by(1)
+      expect { post "/gurus_api/v1/gurus/#{user_name}/deals", @params.to_json }.to change(Deal, :count).by(1)
 
       guru = Guru.find_by_username(user_name)
       expect(guru.deals.count).to eq(1)
@@ -133,7 +133,7 @@ describe "V1::Gurus" do
 
       guru2 = create_guru
       allow(Clients::DealCatalog).to receive(:get_deal).with(@permalink).and_return({ deal: { id: deal_uuid } })
-      expect { post "/v1/gurus/#{guru2.username}/deals", @params.to_json }.to change(Deal, :count).by(0)
+      expect { post "/gurus_api/v1/gurus/#{guru2.username}/deals", @params.to_json }.to change(Deal, :count).by(0)
 
       expect(Deal.count).to eq(1)
       deal = guru2.deals[0]
@@ -142,7 +142,7 @@ describe "V1::Gurus" do
     end
 
     it "raises 404 if guru is not present" do
-      post "v1/gurus/:random/deals", @params.to_json
+      post "gurus_api/v1/gurus/:random/deals", @params.to_json
 
       expect(last_response.status).to eq(404)
     end
@@ -152,7 +152,7 @@ describe "V1::Gurus" do
       create_guru({ username: user_name })
 
       allow(Clients::DealCatalog).to receive(:get_deal).and_return({})
-      post "v1/gurus/#{user_name}/deals", @params.to_json
+      post "gurus_api/v1/gurus/#{user_name}/deals", @params.to_json
 
       expect(last_response.status).to eq(400)
       expect(response_json[:errors].first[:message]).to eq("Deal is not present for permalink #{@permalink}")
@@ -170,7 +170,7 @@ describe "V1::Gurus" do
       }
       }
 
-      expect { post "/v1/gurus/#{user_name}/followers", params.to_json }.to change(Follower, :count).by(1)
+      expect { post "/gurus_api/v1/gurus/#{user_name}/followers", params.to_json }.to change(Follower, :count).by(1)
 
       guru = Guru.find_by_username(user_name)
       expect(guru.followers.count).to eq(1)
@@ -185,7 +185,7 @@ describe "V1::Gurus" do
         userUuid: generate_uuid
       }
       }
-      post "v1/gurus/:random/followers", params.to_json
+      post "gurus_api/v1/gurus/:random/followers", params.to_json
 
       expect(last_response.status).to eq(404)
     end
