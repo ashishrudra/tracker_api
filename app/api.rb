@@ -19,7 +19,7 @@ module GG
         end
       end
 
-      mount({ GG::API::V1::Endpoints => :v1 })
+      mount({ GG::API::V1::Endpoints => "gurus_api/v1" })
 
       get "/ping" do
         { pong: GG.slogan }
