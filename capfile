@@ -22,10 +22,10 @@ end
 registry = (ENV["DOCKER_REGISTRY"] || "docker.groupondev.com")
 
 Sonoma::Remote.configure!({
-  application: "ga",
+  application: "groupon_gurus",
   docker_options: docker_options,
   docker_registry: registry,
-  docker_repository: "gurus/groupon-gurus",
+  docker_repository: "gurus/groupon_gurus",
   hipchat_token: "IeKYgW4T2v4Uham9DSUasNEoy87cnuRjT9sBeEA7",
   load_balancer_delay: 3,
   server_boot_time: 6,
