@@ -12,6 +12,7 @@ gem "activerecord", "~> 4.2.0", { require: "active_record" }
 gem "grape"
 gem "pg"
 gem "puma"
+gem "rack-cors", "~> 0.4.0"
 gem "rake"
 gem "sonoma-activerecord", { git: groupon_path("sonoma/sonoma-activerecord") }
 gem "sonoma-authentication", { git: groupon_path("sonoma/sonoma-authentication") }
