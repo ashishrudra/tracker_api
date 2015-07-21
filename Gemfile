@@ -26,7 +26,6 @@ gem "dotenv"
 group :development, :test do
   gem "bundler-audit"
   gem "byebug"
-  gem "rspec"
   gem "rubocop"
   gem "shotgun"
 end
