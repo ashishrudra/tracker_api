@@ -26,11 +26,14 @@ module GG
           private
 
           def present_deals
-            guru.deals.collect do |deal|
+            guru.guru_deals.collect do |guru_deal|
+              deal = guru_deal.deal
               {
                 id: deal.id,
                 uuid: deal.deal_uuid,
-                permalink: deal.permalink
+                permalink: deal.permalink,
+                is_cover: guru_deal.is_cover,
+                notes: guru_deal.notes
               }
             end
           end
