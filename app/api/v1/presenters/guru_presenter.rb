@@ -24,7 +24,7 @@ module GG
           def present_deals
             guru.deals.collect do |deal|
               {
-                uuid: deal.id,
+                uuid: deal.deal_uuid,
                 permalink: deal.permalink
               }
             end
