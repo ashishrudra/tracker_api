@@ -2,14 +2,6 @@
 
 $LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
 
-require "rubocop/rake_task"
-RuboCop::RakeTask.new(:rubocop) do |task|
-  task.options = ["--display-cop-names", "--fail-fast"]
-end
-
-require "rspec/core/rake_task"
-RSpec::Core::RakeTask.new(:spec)
-
 Dir.glob("./lib/tasks/*.rake").each { |r| import r }
 
 require "sonoma/active_record/database_tasks"
@@ -21,6 +13,11 @@ end
 task :load_test_environment do
   ENV["RACK_ENV"] = "test"
   Rake::Task[:environment].invoke
+end
+
+task :load_test_tasks do
+  require "rspec/core/rake_task"
+  RSpec::Core::RakeTask.new(:spec)
 end
 
 task :audit_dependencies do
@@ -35,5 +32,7 @@ task :update_gems  do
 end
 
 task({ prepare: [:update_gems] })
-task({ test: [:load_test_environment, :spec, :rubocop, :audit_dependencies] })
+task({ test: [:load_test_environment, :load_test_tasks, :audit_dependencies] }) do
+  Rake::Task["spec"].invoke
+end
 task({ default: [:prepare, :test] })
