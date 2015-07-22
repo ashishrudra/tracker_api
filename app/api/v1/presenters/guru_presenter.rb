@@ -32,7 +32,7 @@ module GG
                 id: deal.id,
                 uuid: deal.deal_uuid,
                 permalink: deal.permalink,
-                is_cover: guru_deal.is_cover,
+                isCover: guru_deal.is_cover,
                 notes: guru_deal.notes
               }
             end
