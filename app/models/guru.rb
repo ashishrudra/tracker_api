@@ -21,6 +21,10 @@ class Guru < ActiveRecord::Base
     def update_deal(username, deal_uuid, update_params)
       guru = Guru.find_by_username!(username)
       deal = Deal.find_by_deal_uuid!(deal_uuid)
+      if update_params[:is_cover]
+        GuruDeal.where({ guru: guru }).update_all({ is_cover: false })
+      end
+
       GuruDeal.where({ guru: guru, deal: deal }).update_all(update_params) # could have done this with nested where & joins
     end
 

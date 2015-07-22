@@ -23,6 +23,7 @@ module GG
             optional :avatar
             optional :pageTitle
             optional :location
+            optional :writeup
           end
         end
 
@@ -41,6 +42,7 @@ module GG
             optional :avatar
             optional :pageTitle
             optional :location
+            optional :writeup
           end
         end
 

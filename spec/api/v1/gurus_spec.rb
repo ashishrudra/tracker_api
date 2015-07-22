@@ -107,7 +107,8 @@ describe "V1::Gurus" do
                    userUuid: generate_uuid,
                    avatar: "my_image.jpg",
                    pageTitle: "hello world",
-                   location: "chicago"
+                   location: "chicago",
+                   writeup: "my writeup"
                  }
       }
 
@@ -118,6 +119,7 @@ describe "V1::Gurus" do
       expect(guru.avatar).to eq("my_image.jpg")
       expect(guru.page_title).to eq("hello world")
       expect(guru.location).to eq("chicago")
+      expect(guru.writeup).to eq("my writeup")
     end
 
     it "raises 400 if inputs are not valid/missing" do
@@ -134,13 +136,15 @@ describe "V1::Gurus" do
       params = { guru:
                  { avatar: "my_avatar.jpg",
                    pageTitle: "my page",
-                   location: "chicago"
+                   location: "chicago",
+                   writeup: "my writeup"
                  }
       }
 
       expect(guru.avatar).to be_blank
       expect(guru.page_title).to be_blank
       expect(guru.location).to be_blank
+      expect(guru.writeup).to be_blank
 
       put("/gurus_api/v1/gurus/#{user_name}", params.to_json)
 
@@ -148,6 +152,7 @@ describe "V1::Gurus" do
       expect(guru.avatar).to eq("my_avatar.jpg")
       expect(guru.page_title).to eq("my page")
       expect(guru.location).to eq("chicago")
+      expect(guru.writeup).to eq("my writeup")
     end
 
     it "raises 404 if guru is not present" do
@@ -260,6 +265,26 @@ describe "V1::Gurus" do
       expect(deal.deal_uuid).to eq(deal_uuid)
       expect(guru_deal.is_cover).to be_truthy
       expect(guru_deal.notes).to eq("my favorite deal")
+    end
+
+    it "keeps only one cover deal" do
+      user_name = rand.to_s[2..20]
+      deal_uuid = generate_uuid
+      guru = create_guru({ username: user_name })
+      deal1 = Deal.create!({ deal_uuid: deal_uuid, permalink: "permalink_1" })
+      deal2 = Deal.create!({ deal_uuid: generate_uuid, permalink: "permalink_2" })
+      guru_deal1= GuruDeal.create!(guru: guru, deal: deal1)
+      guru_deal2 = GuruDeal.create!(guru: guru, deal: deal2, is_cover: true)
+
+      expect(guru_deal1.is_cover).to be_falsy
+      expect(guru_deal2.is_cover).to be_truthy
+
+      deal_params = { isCover: true, notes: "my favorite deal" }
+
+      put("/gurus_api/v1/gurus/#{user_name}/deals/#{deal_uuid}", { deal: deal_params }.to_json)
+
+      expect(guru_deal1.reload.is_cover).to be_truthy
+      expect(guru_deal2.reload.is_cover).to be_falsy
     end
 
     it "raises 404 if guru is not present" do

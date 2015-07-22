@@ -99,9 +99,10 @@ CREATE TABLE gurus (
     created_at timestamp without time zone NOT NULL,
     user_uuid uuid NOT NULL,
     username text NOT NULL,
-    avatar text,
-    location text,
-    page_title text
+    avatar character varying,
+    location character varying(50),
+    page_title character varying,
+    writeup text
 );
 
 

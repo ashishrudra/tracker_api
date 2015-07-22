@@ -18,7 +18,8 @@ module GG
               location: guru.location,
               pageTitle: guru.page_title,
               userUuid: guru.user_uuid,
-              username: guru.username
+              username: guru.username,
+              writeup: guru.writeup
             }
           end
 
