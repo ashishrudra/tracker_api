@@ -11,8 +11,8 @@ module GG
           }
         end
 
-        get "/:username" do
-          guru = Guru.find_by_username!(params[:username])
+        get "/:userIdentifier" do
+          guru = Guru.find_by_username(params[:userIdentifier]) || Guru.find_by_user_uuid!(params[:userIdentifier])
           { guru: Presenters::GuruPresenter.new(guru).present }
         end
 
@@ -20,6 +20,9 @@ module GG
           requires :guru, { type: Hash } do
             requires :username, { allow_blank: false }
             requires :userUuid, { regexp: UUID::REGEX }
+            optional :avatar
+            optional :pageTitle
+            optional :location
           end
         end
 
@@ -34,12 +37,60 @@ module GG
         end
 
         params do
+          requires :guru, { type: Hash } do
+            optional :avatar
+            optional :pageTitle
+            optional :location
+          end
+        end
+
+        put "/:username" do
+          declared_params = declared(params)[:guru]
+          guru_params = declared_params.inject({}) do |result, (k, v)|
+            result[k.to_s.underscore.to_sym] = v
+            result
+          end
+
+          guru = Guru.find_by_username!(params[:username])
+          guru.update!(guru_params)
+        end
+
+        params do
           requires :username, { allow_blank: false }
-          requires :dealUri, { allow_blank: false }
+          requires :deal, { type: Hash } do
+            requires :uri, { allow_blank: false }
+            optional :isCover
+            optional :notes
+          end
         end
 
         post "/:username/deals" do
-          Guru.add_deal(params)
+          declared_params = declared(params)[:deal]
+          deal_params = declared_params.inject({}) do |result, (k, v)|
+            result[k.to_s.underscore.to_sym] = v
+            result
+          end
+
+          Guru.add_deal(params[:username], deal_params)
+        end
+
+        params do
+          requires :username, { allow_blank: false }
+          requires :dealUuid, { allow_blank: false }
+          requires :deal, { type: Hash } do
+            optional :isCover
+            optional :notes
+          end
+        end
+
+        put "/:username/deals/:dealUuid" do
+          declared_params = declared(params)[:deal]
+          deal_params = declared_params.inject({}) do |result, (k, v)|
+            result[k.to_s.underscore.to_sym] = v
+            result
+          end
+
+          Guru.update_deal(params[:username], params[:dealUuid], deal_params)
         end
 
         params do

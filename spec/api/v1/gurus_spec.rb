@@ -17,17 +17,19 @@ describe "V1::Gurus" do
     allow(Sonoma::LocalConfig).to receive(:enabled?).with(:AUTHENTICATION).and_return(true)
   end
 
-  describe "GET /:username", :authenticated_user do
+  describe "GET /:userIdentifier", :authenticated_user do
     it "returns guru details when Guru is present" do
       user_uuid = generate_uuid
-      guru = create_guru({ user_uuid: user_uuid })
+      guru = create_guru({ user_uuid: user_uuid,
+                           page_title: "My Page",
+                           location: "chicago",
+                           avatar: "my-avatar.jpg" })
 
       followers_count = rand(10)
 
       followers_count.times do
         follower = Follower.create!({ user_uuid: generate_uuid,
-                                      username: rand.to_s[1..10] }
-                                   )
+                                      username: rand.to_s[1..10] })
 
         guru.followers << follower
       end
@@ -45,12 +47,28 @@ describe "V1::Gurus" do
 
       expect(last_response.status).to eq(200)
       guru_response = response_json[:guru]
-      expect(guru_response[:uuid]).to eq(guru.id)
+      expect(guru_response[:id]).to eq(guru.id)
       expect(guru_response[:userUuid]).to eq(user_uuid)
       expect(guru_response[:followersCount]).to eq(followers_count)
       expect(guru_response[:deals].count).to be(deals_count)
+      expect(guru_response[:pageTitle]).to eq(guru.page_title)
+      expect(guru_response[:location]).to eq(guru.location)
+      expect(guru_response[:avatar]).to eq(guru.avatar)
     end
 
+    it "returns guru details for given guru user_uuid" do
+      user_uuid = generate_uuid
+      user_name = rand.to_s[2..15]
+      guru = create_guru({ user_uuid: user_uuid,
+                           username: user_name })
+
+      get("gurus_api/v1/gurus/#{guru.user_uuid}.json")
+
+      expect(last_response.status).to eq(200)
+      guru_response = response_json[:guru]
+      expect(guru_response[:id]).to eq(guru.id)
+      expect(guru_response[:username]).to eq(user_name)
+    end
     it "returns 404 when guru is not present" do
       get("gurus_api/v1/gurus/noname.json")
 
@@ -58,7 +76,7 @@ describe "V1::Gurus" do
     end
   end
 
-  context "GET /gurus_api/v1/markup_schedules", "when not authenticated" do
+  context "GET /gurus_api/v1/gurus", "when not authenticated" do
     it "returns a 401 error" do
       get("gurus_api/v1/gurus.json")
 
@@ -86,7 +104,10 @@ describe "V1::Gurus" do
       params = { guru:
                  {
                    username: user_name,
-                   userUuid: generate_uuid
+                   userUuid: generate_uuid,
+                   avatar: "my_image.jpg",
+                   pageTitle: "hello world",
+                   location: "chicago"
                  }
       }
 
@@ -94,6 +115,9 @@ describe "V1::Gurus" do
 
       guru = Guru.find_by_username(user_name)
       expect(guru.user_uuid).to eq(params[:guru][:userUuid])
+      expect(guru.avatar).to eq("my_image.jpg")
+      expect(guru.page_title).to eq("hello world")
+      expect(guru.location).to eq("chicago")
     end
 
     it "raises 400 if inputs are not valid/missing" do
@@ -103,26 +127,80 @@ describe "V1::Gurus" do
     end
   end
 
+  describe "PUT /", :authenticated_user do
+    it "updates a guru" do
+      user_name = rand.to_s[2..20]
+      guru = create_guru({ username: user_name })
+      params = { guru:
+                 { avatar: "my_avatar.jpg",
+                   pageTitle: "my page",
+                   location: "chicago"
+                 }
+      }
+
+      expect(guru.avatar).to be_blank
+      expect(guru.page_title).to be_blank
+      expect(guru.location).to be_blank
+
+      put("/gurus_api/v1/gurus/#{user_name}", params.to_json)
+
+      guru.reload
+      expect(guru.avatar).to eq("my_avatar.jpg")
+      expect(guru.page_title).to eq("my page")
+      expect(guru.location).to eq("chicago")
+    end
+
+    it "raises 404 if guru is not present" do
+      put "gurus_api/v1/not-a-guru"
+
+      expect(last_response.status).to eq(404)
+    end
+
+    it "does not update user_uuid or username" do
+      user_name = rand.to_s[2..20]
+      user_uuid = generate_uuid
+      guru = create_guru({ username: user_name,
+                           user_uuid: user_uuid })
+      params = { guru:
+                 { user_name: "updated",
+                   user_uuid: generate_uuid,
+                   avatar: "my_avatar.jpg" }
+      }
+
+      put("/gurus_api/v1/gurus/#{user_name}", params.to_json)
+
+      guru.reload
+      expect(guru.avatar).to eq("my_avatar.jpg")
+      expect(guru.user_uuid).to eq(user_uuid)
+      expect(guru.username).to eq(user_name)
+    end
+  end
+
   describe "POST /:username/deals", :authenticated_user do
     before(:each) do
       @permalink = rand.to_s[2..15]
       deal_uri = "www.groupon.com/deals/#{@permalink}"
-      @params = { dealUri: deal_uri }
+      @deal_params = { uri: deal_uri }
     end
+
     it "adds deal to guru" do
       user_name = rand.to_s[2..20]
       create_guru({ username: user_name })
 
       deal_uuid = generate_uuid
       allow(Clients::DealCatalog).to receive(:get_deal).with(@permalink).and_return({ deal: { id: deal_uuid } })
+      params = { deal: @deal_params.merge!({ isCover: true, notes: "my favorite deal" }) }
 
-      expect { post "/gurus_api/v1/gurus/#{user_name}/deals", @params.to_json }.to change(Deal, :count).by(1)
+      expect { post "/gurus_api/v1/gurus/#{user_name}/deals", params.to_json }.to change(Deal, :count).by(1)
 
       guru = Guru.find_by_username(user_name)
       expect(guru.deals.count).to eq(1)
-      deal = guru.deals[0]
+      guru_deal = guru.guru_deals.first
+      deal = guru_deal.deal
       expect(deal.permalink).to eq(@permalink)
       expect(deal.deal_uuid).to eq(deal_uuid)
+      expect(guru_deal.is_cover).to be_truthy
+      expect(guru_deal.notes).to eq("my favorite deal")
     end
 
     it "does not create new deal record if its already exists" do
@@ -133,7 +211,7 @@ describe "V1::Gurus" do
 
       guru2 = create_guru
       allow(Clients::DealCatalog).to receive(:get_deal).with(@permalink).and_return({ deal: { id: deal_uuid } })
-      expect { post "/gurus_api/v1/gurus/#{guru2.username}/deals", @params.to_json }.to change(Deal, :count).by(0)
+      expect { post "/gurus_api/v1/gurus/#{guru2.username}/deals", { deal: @deal_params }.to_json }.to change(Deal, :count).by(0)
 
       expect(Deal.count).to eq(1)
       deal = guru2.deals[0]
@@ -142,7 +220,7 @@ describe "V1::Gurus" do
     end
 
     it "raises 404 if guru is not present" do
-      post "gurus_api/v1/gurus/:random/deals", @params.to_json
+      post "gurus_api/v1/gurus/:random/deals", { deal: @deal_params }.to_json
 
       expect(last_response.status).to eq(404)
     end
@@ -152,10 +230,42 @@ describe "V1::Gurus" do
       create_guru({ username: user_name })
 
       allow(Clients::DealCatalog).to receive(:get_deal).and_return({})
-      post "gurus_api/v1/gurus/#{user_name}/deals", @params.to_json
+      post "gurus_api/v1/gurus/#{user_name}/deals", { deal: @deal_params }.to_json
 
       expect(last_response.status).to eq(400)
       expect(response_json[:errors].first[:message]).to eq("Deal is not present for permalink #{@permalink}")
+    end
+  end
+
+  describe "PUT /:username/deals/:dealUuid", :authenticated_user do
+    it "updates guru's deal" do
+      user_name = rand.to_s[2..20]
+      deal_uuid = generate_uuid
+      guru = create_guru({ username: user_name })
+      deal = Deal.create!({ deal_uuid: deal_uuid, permalink: "a-permalink" })
+      guru.deals << deal
+
+      guru_deal = guru.guru_deals.first
+      expect(guru_deal.is_cover).to be_falsy
+      expect(guru_deal.notes).to be_blank
+
+      deal_params = { isCover: true, notes: "my favorite deal" }
+
+      put("/gurus_api/v1/gurus/#{user_name}/deals/#{deal_uuid}", { deal: deal_params }.to_json)
+
+      guru.reload
+
+      guru_deal = guru.guru_deals.first
+      deal = guru_deal.deal
+      expect(deal.deal_uuid).to eq(deal_uuid)
+      expect(guru_deal.is_cover).to be_truthy
+      expect(guru_deal.notes).to eq("my favorite deal")
+    end
+
+    it "raises 404 if guru is not present" do
+      put "gurus_api/v1/gurus/:random/deals/:random", { deal: {} }.to_json
+
+      expect(last_response.status).to eq(404)
     end
   end
 
@@ -165,9 +275,10 @@ describe "V1::Gurus" do
       create_guru({ username: user_name })
 
       params = { follower:
-                 { username: rand.to_s[2..40],
+                 {
+                   username: rand.to_s[2..40],
                    userUuid: generate_uuid
-      }
+                 }
       }
 
       expect { post "/gurus_api/v1/gurus/#{user_name}/followers", params.to_json }.to change(Follower, :count).by(1)
@@ -180,11 +291,13 @@ describe "V1::Gurus" do
     end
 
     it "raises 404 if guru is not present" do
-      params = { follower: {
-        username: rand.to_s[2..40],
-        userUuid: generate_uuid
+      params = { follower:
+                  {
+                    username: rand.to_s[2..40],
+                    userUuid: generate_uuid
+                  }
       }
-      }
+
       post "gurus_api/v1/gurus/:random/followers", params.to_json
 
       expect(last_response.status).to eq(404)
