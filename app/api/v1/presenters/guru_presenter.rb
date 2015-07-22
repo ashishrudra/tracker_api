@@ -11,11 +11,15 @@ module GG
 
           def present
             {
+              avatar: guru.avatar,
               deals: present_deals,
               followersCount: guru.followers.count,
+              id: guru.id,
+              location: guru.location,
+              pageTitle: guru.page_title,
               userUuid: guru.user_uuid,
               username: guru.username,
-              uuid: guru.id
+              writeup: guru.writeup
             }
           end
 
@@ -24,6 +28,7 @@ module GG
           def present_deals
             guru.deals.collect do |deal|
               {
+                id: deal.id,
                 uuid: deal.deal_uuid,
                 permalink: deal.permalink
               }
