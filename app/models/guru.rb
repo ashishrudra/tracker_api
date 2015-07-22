@@ -16,6 +16,8 @@ class Guru < ActiveRecord::Base
       deal = Deal.find_or_create_by!({ deal_uuid: deal_uuid, permalink: permalink })
       guru_deal_mapping = GuruDeal.find_or_create_by!({ guru: guru, deal: deal })
       guru_deal_mapping.update(deal_params.except(:uri))
+
+      guru.reload
     end
 
     def update_deal(username, deal_uuid, update_params)
@@ -26,12 +28,16 @@ class Guru < ActiveRecord::Base
       end
 
       GuruDeal.where({ guru: guru, deal: deal }).update_all(update_params) # could have done this with nested where & joins
+
+      guru.reload
     end
 
     def add_follower(username, follower_params)
       guru = Guru.find_by_username!(username)
 
       guru.followers << Follower.find_or_create_by!(follower_params)
+
+      guru.reload
     end
   end
 end
