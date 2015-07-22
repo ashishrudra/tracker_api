@@ -20,8 +20,7 @@ describe "V1::Followers" do
   describe "GET /:user_uuid/gurus", :authenticated_user do
     it "returns guru details when Guru is present" do
       follower_uuid = generate_uuid
-      follower = Follower.create!({ user_uuid: follower_uuid,
-                                    username: rand.to_s[2..18] })
+      follower = Follower.create!({ user_uuid: follower_uuid })
 
       guru_count = rand(10)
 

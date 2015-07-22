@@ -61,8 +61,7 @@ CREATE TABLE deals (
 
 CREATE TABLE followers (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    user_uuid uuid NOT NULL,
-    username text NOT NULL
+    user_uuid uuid NOT NULL
 );
 
 
@@ -100,7 +99,7 @@ CREATE TABLE gurus (
     user_uuid uuid NOT NULL,
     username text NOT NULL,
     avatar character varying,
-    location character varying(50),
+    place character varying(50),
     page_title character varying,
     writeup text
 );
@@ -185,4 +184,8 @@ INSERT INTO schema_migrations (version) VALUES ('20150720000745');
 INSERT INTO schema_migrations (version) VALUES ('20150720000746');
 
 INSERT INTO schema_migrations (version) VALUES ('20150720000747');
+
+INSERT INTO schema_migrations (version) VALUES ('20150720000748');
+
+INSERT INTO schema_migrations (version) VALUES ('20150720000749');
 
