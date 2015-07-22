@@ -48,7 +48,7 @@ module GG
           end
         end
 
-        put "/:username" do
+        self.route [:put, :post], "/:username" do
           declared_params = declared(params)[:guru]
           guru_params = declared_params.inject({}) do |result, (k, v)|
             result[k.to_s.underscore.to_sym] = v
@@ -90,7 +90,7 @@ module GG
           end
         end
 
-        put "/:username/deals/:dealUuid" do
+        self.route [:put, :post], "/:username/deals/:dealUuid" do
           declared_params = declared(params)[:deal]
           deal_params = declared_params.inject({}) do |result, (k, v)|
             result[k.to_s.underscore.to_sym] = v
