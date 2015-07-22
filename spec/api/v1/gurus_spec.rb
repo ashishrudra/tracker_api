@@ -322,6 +322,29 @@ describe "V1::Gurus" do
       expect(follower.user_uuid).to eq(params[:follower][:userUuid])
     end
 
+    it "doesn't add follower entry if already existing" do
+      user_name = rand.to_s[2..20]
+      follower_name = rand.to_s[2..20]
+      user_uuid = generate_uuid
+      create_guru({ username: user_name })
+
+      params = { follower:
+                   {
+                     username: follower_name,
+                     userUuid: user_uuid
+                   }
+      }
+
+      expect { post "/gurus_api/v1/gurus/#{user_name}/followers", params.to_json }.to change(Follower, :count).by(1)
+
+      guru = Guru.find_by_username(user_name)
+      follower_count = guru.followers.count
+
+      post "/gurus_api/v1/gurus/#{user_name}/followers", params.to_json
+      guru.reload
+      expect(guru.followers.count).to eq(follower_count)
+    end
+
     it "raises 404 if guru is not present" do
       params = { follower:
                   {

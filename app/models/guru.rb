@@ -34,8 +34,8 @@ class Guru < ActiveRecord::Base
 
     def add_follower(username, follower_params)
       guru = Guru.find_by_username!(username)
-
-      guru.followers << Follower.find_or_create_by!(follower_params)
+      follower = Follower.find_or_create_by!(follower_params)
+      GuruFollower.find_or_create_by!(guru: guru, follower: follower)
 
       guru.reload
     end
