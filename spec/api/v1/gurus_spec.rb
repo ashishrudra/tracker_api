@@ -43,7 +43,7 @@ describe "V1::Gurus" do
         guru.deals << deal
       end
 
-      get("gurus_api/v1/gurus/#{guru.username}.json")
+      get("gurus_api/v1/gurus/#{guru.username}")
 
       expect(last_response.status).to eq(200)
       guru_response = response_json[:guru]
@@ -62,7 +62,7 @@ describe "V1::Gurus" do
       guru = create_guru({ user_uuid: user_uuid,
                            username: user_name })
 
-      get("gurus_api/v1/gurus/#{guru.user_uuid}.json")
+      get("gurus_api/v1/gurus/#{guru.user_uuid}")
 
       expect(last_response.status).to eq(200)
       guru_response = response_json[:guru]
@@ -70,7 +70,7 @@ describe "V1::Gurus" do
       expect(guru_response[:username]).to eq(user_name)
     end
     it "returns 404 when guru is not present" do
-      get("gurus_api/v1/gurus/noname.json")
+      get("gurus_api/v1/gurus/noname")
 
       expect(last_response.status).to eq(404)
     end
@@ -78,7 +78,7 @@ describe "V1::Gurus" do
 
   context "GET /gurus_api/v1/gurus", "when not authenticated" do
     it "returns a 401 error" do
-      get("gurus_api/v1/gurus.json")
+      get("gurus_api/v1/gurus")
 
       expect_unauthorized_response
     end
@@ -92,7 +92,7 @@ describe "V1::Gurus" do
         create_guru
       end
 
-      get("gurus_api/v1/gurus.json")
+      get("gurus_api/v1/gurus")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(gurus_count)
     end
@@ -114,6 +114,15 @@ describe "V1::Gurus" do
 
       expect { post "/gurus_api/v1/gurus", params.to_json }.to change(Guru, :count).by(1)
 
+      # API Checks
+      guru = response_json[:guru]
+      expect(guru[:userUuid]).to eq(params[:guru][:userUuid])
+      expect(guru[:avatar]).to eq("my_image.jpg")
+      expect(guru[:pageTitle]).to eq("hello world")
+      expect(guru[:location]).to eq("chicago")
+      expect(guru[:writeup]).to eq("my writeup")
+
+      # DB Checks
       guru = Guru.find_by_username(user_name)
       expect(guru.user_uuid).to eq(params[:guru][:userUuid])
       expect(guru.avatar).to eq("my_image.jpg")

@@ -19,6 +19,8 @@ module GG
         end
       end
 
+      default_format :json
+
       mount({ GG::API::V1::Endpoints => "gurus_api/v1" })
 
       get "/ping" do

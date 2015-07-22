@@ -5,9 +5,10 @@ module GG
         get "/" do
           gurus = Guru.all
 
-          { gurus: gurus.map do |guru|
-            Presenters::GuruPresenter.new(guru).present
-          end
+          {
+            gurus: gurus.map do |guru|
+              Presenters::GuruPresenter.new(guru).present
+            end
           }
         end
 
@@ -34,7 +35,8 @@ module GG
             result
           end
 
-          Guru.create!(guru_params)
+          guru = Guru.create!(guru_params)
+          { guru: Presenters::GuruPresenter.new(guru).present }
         end
 
         params do
@@ -55,6 +57,8 @@ module GG
 
           guru = Guru.find_by_username!(params[:username])
           guru.update!(guru_params)
+
+          { guru: Presenters::GuruPresenter.new(guru).present }
         end
 
         params do
@@ -73,7 +77,8 @@ module GG
             result
           end
 
-          Guru.add_deal(params[:username], deal_params)
+          guru = Guru.add_deal(params[:username], deal_params)
+          { guru: Presenters::GuruPresenter.new(guru).present }
         end
 
         params do
@@ -92,7 +97,8 @@ module GG
             result
           end
 
-          Guru.update_deal(params[:username], params[:dealUuid], deal_params)
+          guru = Guru.update_deal(params[:username], params[:dealUuid], deal_params)
+          { guru: Presenters::GuruPresenter.new(guru).present }
         end
 
         params do
@@ -110,7 +116,8 @@ module GG
             result
           end
 
-          Guru.add_follower(params[:username], follower_params)
+          guru = Guru.add_follower(params[:username], follower_params)
+          { guru: Presenters::GuruPresenter.new(guru).present }
         end
       end
     end
