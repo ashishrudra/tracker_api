@@ -23,7 +23,7 @@ module GG
             requires :userUuid, { regexp: UUID::REGEX }
             optional :avatar
             optional :pageTitle
-            optional :location
+            optional :place
             optional :writeup
           end
         end
@@ -43,7 +43,7 @@ module GG
           requires :guru, { type: Hash } do
             optional :avatar
             optional :pageTitle
-            optional :location
+            optional :place
             optional :writeup
           end
         end
@@ -104,7 +104,6 @@ module GG
         params do
           requires :username, { allow_blank: false }
           requires :follower, { type: Hash } do
-            requires :username, { allow_blank: false }
             requires :userUuid, { regexp: UUID::REGEX }
           end
         end

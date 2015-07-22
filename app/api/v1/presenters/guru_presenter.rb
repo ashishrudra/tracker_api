@@ -15,7 +15,7 @@ module GG
               deals: present_deals,
               followersCount: guru.followers.count,
               id: guru.id,
-              location: guru.location,
+              place: guru.place,
               pageTitle: guru.page_title,
               userUuid: guru.user_uuid,
               username: guru.username,

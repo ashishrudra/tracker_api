@@ -22,14 +22,13 @@ describe "V1::Gurus" do
       user_uuid = generate_uuid
       guru = create_guru({ user_uuid: user_uuid,
                            page_title: "My Page",
-                           location: "chicago",
+                           place: "chicago",
                            avatar: "my-avatar.jpg" })
 
       followers_count = rand(10)
 
       followers_count.times do
-        follower = Follower.create!({ user_uuid: generate_uuid,
-                                      username: rand.to_s[1..10] })
+        follower = Follower.create!({ user_uuid: generate_uuid })
 
         guru.followers << follower
       end
@@ -52,7 +51,7 @@ describe "V1::Gurus" do
       expect(guru_response[:followersCount]).to eq(followers_count)
       expect(guru_response[:deals].count).to be(deals_count)
       expect(guru_response[:pageTitle]).to eq(guru.page_title)
-      expect(guru_response[:location]).to eq(guru.location)
+      expect(guru_response[:place]).to eq(guru.place)
       expect(guru_response[:avatar]).to eq(guru.avatar)
     end
 
@@ -107,7 +106,7 @@ describe "V1::Gurus" do
                    userUuid: generate_uuid,
                    avatar: "my_image.jpg",
                    pageTitle: "hello world",
-                   location: "chicago",
+                   place: "chicago",
                    writeup: "my writeup"
                  }
       }
@@ -119,7 +118,7 @@ describe "V1::Gurus" do
       expect(guru[:userUuid]).to eq(params[:guru][:userUuid])
       expect(guru[:avatar]).to eq("my_image.jpg")
       expect(guru[:pageTitle]).to eq("hello world")
-      expect(guru[:location]).to eq("chicago")
+      expect(guru[:place]).to eq("chicago")
       expect(guru[:writeup]).to eq("my writeup")
 
       # DB Checks
@@ -127,7 +126,7 @@ describe "V1::Gurus" do
       expect(guru.user_uuid).to eq(params[:guru][:userUuid])
       expect(guru.avatar).to eq("my_image.jpg")
       expect(guru.page_title).to eq("hello world")
-      expect(guru.location).to eq("chicago")
+      expect(guru.place).to eq("chicago")
       expect(guru.writeup).to eq("my writeup")
     end
 
@@ -145,14 +144,14 @@ describe "V1::Gurus" do
       params = { guru:
                  { avatar: "my_avatar.jpg",
                    pageTitle: "my page",
-                   location: "chicago",
+                   place: "chicago",
                    writeup: "my writeup"
                  }
       }
 
       expect(guru.avatar).to be_blank
       expect(guru.page_title).to be_blank
-      expect(guru.location).to be_blank
+      expect(guru.place).to be_blank
       expect(guru.writeup).to be_blank
 
       put("/gurus_api/v1/gurus/#{user_name}", params.to_json)
@@ -160,7 +159,7 @@ describe "V1::Gurus" do
       guru.reload
       expect(guru.avatar).to eq("my_avatar.jpg")
       expect(guru.page_title).to eq("my page")
-      expect(guru.location).to eq("chicago")
+      expect(guru.place).to eq("chicago")
       expect(guru.writeup).to eq("my writeup")
     end
 
@@ -320,7 +319,6 @@ describe "V1::Gurus" do
       guru = Guru.find_by_username(user_name)
       expect(guru.followers.count).to eq(1)
       follower = guru.followers[0]
-      expect(follower.username).to eq(params[:follower][:username])
       expect(follower.user_uuid).to eq(params[:follower][:userUuid])
     end
 
