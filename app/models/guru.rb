@@ -7,6 +7,10 @@ class Guru < ActiveRecord::Base
   has_many :deals, { through: :guru_deals }
   has_many :followers, { through: :guru_followers }
 
+  def followers_count
+    followers.count
+  end
+
   class << self
     def add_deal(username, deal_params)
       guru = Guru.find_by_username!(username)
@@ -36,6 +40,14 @@ class Guru < ActiveRecord::Base
       guru = Guru.find_by_username!(username)
       follower = Follower.find_or_create_by!(follower_params)
       GuruFollower.find_or_create_by!(guru: guru, follower: follower)
+
+      guru.reload
+    end
+
+    def remove_follower(username, follower_uuid)
+      guru = Guru.find_by_username!(username)
+      follower = Follower.find_by_user_uuid!(follower_uuid)
+      GuruFollower.delete_all(guru: guru, follower: follower)
 
       guru.reload
     end

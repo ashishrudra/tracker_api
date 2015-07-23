@@ -28,9 +28,7 @@ describe "V1::Gurus" do
       followers_count = rand(10)
 
       followers_count.times do
-        follower = Follower.create!({ user_uuid: generate_uuid })
-
-        guru.followers << follower
+        guru.followers << Follower.create!({ user_uuid: generate_uuid })
       end
 
       deals_count = rand(10)
@@ -43,7 +41,6 @@ describe "V1::Gurus" do
       end
 
       get("gurus_api/v1/gurus/#{guru.username}")
-
       expect(last_response.status).to eq(200)
       guru_response = response_json[:guru]
       expect(guru_response[:id]).to eq(guru.id)
@@ -84,6 +81,14 @@ describe "V1::Gurus" do
   end
 
   describe "GET /", :authenticated_user do
+    def create_guru_with_followers(followers_count)
+      guru = create_guru
+      followers_count.times do
+        guru.followers << Follower.create!(user_uuid: generate_uuid)
+      end
+      guru.reload
+    end
+
     it "returns array of gurus" do
       gurus_count = rand(10)
 
@@ -94,6 +99,19 @@ describe "V1::Gurus" do
       get("gurus_api/v1/gurus")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(gurus_count)
+    end
+
+    it "returns array of gurus sort by followers count" do
+      guru1 = create_guru_with_followers(10)
+      guru2 = create_guru_with_followers(30)
+      guru3 = create_guru_with_followers(20)
+
+      get("gurus_api/v1/gurus")
+      expect(last_response.status).to eq(200)
+      expect(response_json[:gurus].count).to be(3)
+      expect(response_json[:gurus].first[:id]).to eq(guru2.id)
+      expect(response_json[:gurus].second[:id]).to eq(guru3.id)
+      expect(response_json[:gurus].last[:id]).to eq(guru1.id)
     end
   end
 
@@ -309,7 +327,6 @@ describe "V1::Gurus" do
 
       params = { follower:
                  {
-                   username: rand.to_s[2..40],
                    userUuid: generate_uuid
                  }
       }
@@ -318,19 +335,18 @@ describe "V1::Gurus" do
 
       guru = Guru.find_by_username(user_name)
       expect(guru.followers.count).to eq(1)
+      expect(guru.followers_count).to eq(1)
       follower = guru.followers[0]
       expect(follower.user_uuid).to eq(params[:follower][:userUuid])
     end
 
     it "doesn't add follower entry if already existing" do
       user_name = rand.to_s[2..20]
-      follower_name = rand.to_s[2..20]
       user_uuid = generate_uuid
       create_guru({ username: user_name })
 
       params = { follower:
                    {
-                     username: follower_name,
                      userUuid: user_uuid
                    }
       }
@@ -338,22 +354,70 @@ describe "V1::Gurus" do
       expect { post "/gurus_api/v1/gurus/#{user_name}/followers", params.to_json }.to change(Follower, :count).by(1)
 
       guru = Guru.find_by_username(user_name)
-      follower_count = guru.followers.count
+      followers_count = guru.followers.count
 
       post "/gurus_api/v1/gurus/#{user_name}/followers", params.to_json
       guru.reload
-      expect(guru.followers.count).to eq(follower_count)
+      expect(guru.followers.count).to eq(followers_count)
+      expect(guru.followers_count).to eq(followers_count)
     end
 
     it "raises 404 if guru is not present" do
       params = { follower:
                   {
-                    username: rand.to_s[2..40],
                     userUuid: generate_uuid
                   }
       }
 
       post "gurus_api/v1/gurus/:random/followers", params.to_json
+
+      expect(last_response.status).to eq(404)
+    end
+  end
+
+  describe "DELETE /:username/followers/:followerUuid", :authenticated_user do
+    it "removes follower from guru" do
+      user_name = rand.to_s[2..20]
+      follower_uuid = generate_uuid
+      guru = create_guru({ username: user_name })
+      follower = Follower.create!(user_uuid: follower_uuid)
+      guru.followers << follower
+      expect(guru.reload.followers_count).to be(1)
+
+      expect { post "/gurus_api/v1/gurus/#{user_name}/followers/#{follower_uuid}" }.to change(GuruFollower, :count).by(-1)
+
+      guru.reload
+      expect(guru.followers.count).to eq(0)
+    end
+
+    it "doesn't delete other followers entry" do
+      user_name = rand.to_s[2..20]
+      follower_uuid = generate_uuid
+      guru = create_guru({ username: user_name })
+      follower = Follower.create!(user_uuid: follower_uuid)
+      guru.followers << follower
+      other_followers = rand(20)
+      other_followers.times do
+        guru.followers << Follower.create!(user_uuid: generate_uuid)
+      end
+
+      expect(guru.reload.followers_count).to be(other_followers+1)
+
+      expect { post "/gurus_api/v1/gurus/#{user_name}/followers/#{follower_uuid}" }.to change(GuruFollower, :count).by(-1)
+
+      guru.reload
+      expect(guru.followers.count).to eq(other_followers)
+    end
+
+    it "raises 404 if guru is not present" do
+      post "/gurus_api/v1/gurus/not_a_guru/followers/#{generate_uuid}"
+
+      expect(last_response.status).to eq(404)
+    end
+
+    it "raises 404 if follower is not present" do
+      guru = create_guru
+      post "/gurus_api/v1/gurus/#{guru.username}/followers/#{generate_uuid}"
 
       expect(last_response.status).to eq(404)
     end

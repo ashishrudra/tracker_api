@@ -7,7 +7,7 @@ module GG
         get "/:userUuid/gurus" do
           follower = Follower.find_by_user_uuid!(params[:userUuid])
 
-          { gurus: follower.gurus.map { |guru| Presenters::GuruPresenter.new(guru).present } }
+          { gurus: follower.gurus.sort_by(&:followers_count).reverse!.map { |guru| Presenters::GuruPresenter.new(guru).present } }
         end
 
         get "/:userUuid/deals" do

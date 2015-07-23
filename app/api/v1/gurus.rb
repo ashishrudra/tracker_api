@@ -3,7 +3,7 @@ module GG
     module V1
       class Gurus < Grape::API
         get "/" do
-          gurus = Guru.all
+          gurus = Guru.all.sort_by(&:followers_count).reverse!
 
           {
             gurus: gurus.map do |guru|
@@ -116,6 +116,12 @@ module GG
           end
 
           guru = Guru.add_follower(params[:username], follower_params)
+          { guru: Presenters::GuruPresenter.new(guru).present }
+        end
+
+        self.route [:delete, :post], "/:username/followers/:followerUuid" do
+          guru = Guru.remove_follower(params[:username], params[:followerUuid])
+
           { guru: Presenters::GuruPresenter.new(guru).present }
         end
       end
