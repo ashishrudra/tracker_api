@@ -75,16 +75,6 @@ describe "V1::Followers" do
       expect(response_json[:gurus].first[:userUuid]).to eq(not_following.user_uuid)
     end
 
-    it "limits the results to 8" do
-      follower_uuid = generate_uuid
-      follower = Follower.create!({ user_uuid: follower_uuid })
-      10.times { create_guru }
-
-      get("gurus_api/v1/followers/recommended?userUuid=#{follower_uuid}")
-      expect(last_response.status).to eq(200)
-      expect(response_json[:gurus].count).to be(8)
-    end
-
     it "returns all gurus when follower is not present" do
       8.times { create_guru }
 

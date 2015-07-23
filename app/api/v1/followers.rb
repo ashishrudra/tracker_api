@@ -3,7 +3,6 @@ module GG
     module V1
       class Followers < Grape::API
         DEALS_LIMIT = 4.freeze
-        RECOMMENDED_LIMIT = 8.freeze
 
         get "/:userUuid/gurus" do
           follower = Follower.find_by_user_uuid!(params[:userUuid])
@@ -27,7 +26,7 @@ module GG
 
         get "/recommended" do
           gurus = Guru.recommended(params[:userUuid])
-          { gurus: gurus.take(RECOMMENDED_LIMIT).sort_by(&:followers_count).reverse!.map { |guru| Presenters::GuruPresenter.new(guru).present } }
+          { gurus: gurus.sort_by(&:followers_count).reverse!.map { |guru| Presenters::GuruPresenter.new(guru).present } }
         end
       end
     end
