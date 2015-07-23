@@ -60,14 +60,14 @@ describe "V1::Followers" do
     end
   end
 
-  describe "GET /:user_uuid/not_following", :authenticated_user do
+  describe "GET /:user_uuid/recommended", :authenticated_user do
     it "returns all gurus that I'm not following" do
       follower_uuid = generate_uuid
       follower = Follower.create!({ user_uuid: follower_uuid })
       following, not_following = create_guru, create_guru
       follower.gurus << following
 
-      get("gurus_api/v1/followers/#{follower_uuid}/not_following.json")
+      get("gurus_api/v1/followers/#{follower_uuid}/recommended.json")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(1)
       gurus = response_json[:gurus]
@@ -75,27 +75,39 @@ describe "V1::Followers" do
       expect(response_json[:gurus].first[:userUuid]).to eq(not_following.user_uuid)
     end
 
-    it "returns 404 when follower is not present" do
-      get("gurus_api/v1/followers/#{generate_uuid}/not_following.json")
+    it "limits the results to 8" do
+      follower_uuid = generate_uuid
+      follower = Follower.create!({ user_uuid: follower_uuid })
+      10.times { create_guru }
 
-      expect(last_response.status).to eq(404)
+      get("gurus_api/v1/followers/#{follower_uuid}/recommended.json")
+      expect(last_response.status).to eq(200)
+      expect(response_json[:gurus].count).to be(8)
+    end
+
+    it "returns all gurus when follower is not present" do
+      8.times { create_guru }
+
+      get("gurus_api/v1/followers/null/recommended.json")
+      expect(last_response.status).to eq(200)
+      expect(response_json[:gurus].count).to be(8)
     end
   end
 
   describe "GET /:user_uuid/deals", :authenticated_user do
-    it "returns 20 random deals" do
+    it "returns 4 random deals" do
       follower_uuid = generate_uuid
       follower = Follower.create!({ user_uuid: follower_uuid })
       3.times do
         guru = create_guru
-        10.times { guru.deals << create_deal }
+        5.times { guru.deals << create_deal }
         follower.gurus << guru
       end
 
       get("gurus_api/v1/followers/#{follower_uuid}/deals.json")
 
       expect(last_response.status).to eq(200)
-      expect(response_json[:deals].count).to be(20)
+      expect(response_json[:deals].count).to be(4)
     end
 
     it "returns 404 when follower is not present" do

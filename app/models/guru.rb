@@ -52,10 +52,11 @@ class Guru < ActiveRecord::Base
       guru.reload
     end
 
-    def unfollowed(user_uuid)
-      follower = Follower.find_by_user_uuid!(user_uuid)
+    def recommended(user_uuid)
+      follower = Follower.find_by_user_uuid(user_uuid)
+      return Guru.all unless follower
       following = GuruFollower.where(follower: follower).map(&:guru_id)
-      Guru.where.not(id: following)
+      gurus = Guru.where.not(id: following)
     end
   end
 end
