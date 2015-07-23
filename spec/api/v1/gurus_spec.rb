@@ -84,7 +84,7 @@ describe "V1::Gurus" do
     def create_guru_with_followers(followers_count)
       guru = create_guru
       followers_count.times do
-        guru.followers << Follower.create!(user_uuid: generate_uuid)
+        guru.followers << Follower.create!({ user_uuid: generate_uuid })
       end
       guru.reload
     end
@@ -299,8 +299,8 @@ describe "V1::Gurus" do
       guru = create_guru({ username: user_name })
       deal1 = Deal.create!({ deal_uuid: deal_uuid, permalink: "permalink_1" })
       deal2 = Deal.create!({ deal_uuid: generate_uuid, permalink: "permalink_2" })
-      guru_deal1= GuruDeal.create!(guru: guru, deal: deal1)
-      guru_deal2 = GuruDeal.create!(guru: guru, deal: deal2, is_cover: true)
+      guru_deal1 = GuruDeal.create!({ guru: guru, deal: deal1 })
+      guru_deal2 = GuruDeal.create!({ guru: guru, deal: deal2, is_cover: true })
 
       expect(guru_deal1.is_cover).to be_falsy
       expect(guru_deal2.is_cover).to be_truthy
@@ -380,7 +380,7 @@ describe "V1::Gurus" do
       user_name = rand.to_s[2..20]
       follower_uuid = generate_uuid
       guru = create_guru({ username: user_name })
-      follower = Follower.create!(user_uuid: follower_uuid)
+      follower = Follower.create!({ user_uuid: follower_uuid })
       guru.followers << follower
       expect(guru.reload.followers_count).to be(1)
 
@@ -394,14 +394,14 @@ describe "V1::Gurus" do
       user_name = rand.to_s[2..20]
       follower_uuid = generate_uuid
       guru = create_guru({ username: user_name })
-      follower = Follower.create!(user_uuid: follower_uuid)
+      follower = Follower.create!({ user_uuid: follower_uuid })
       guru.followers << follower
       other_followers = rand(20)
       other_followers.times do
-        guru.followers << Follower.create!(user_uuid: generate_uuid)
+        guru.followers << Follower.create!({ user_uuid: generate_uuid })
       end
 
-      expect(guru.reload.followers_count).to be(other_followers+1)
+      expect(guru.reload.followers_count).to be(other_followers + 1)
 
       expect { post "/gurus_api/v1/gurus/#{user_name}/followers/#{follower_uuid}" }.to change(GuruFollower, :count).by(-1)
 
