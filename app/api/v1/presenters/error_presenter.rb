@@ -23,11 +23,13 @@ module GG
           private
 
           def present_string_message(message)
-            {
+            data = {
               code: code,
               description: description,
               message: message
             }
+            data[:backtrace] = self.error.backtrace if self.error.respond_to?(:backtrace)
+            data
           end
 
           def present_hash_message(message)

@@ -65,6 +65,7 @@ describe "V1::Gurus" do
       expect(guru_response[:id]).to eq(guru.id)
       expect(guru_response[:username]).to eq(user_name)
     end
+
     it "returns 404 when guru is not present" do
       get("gurus_api/v1/gurus/noname")
 
@@ -112,6 +113,17 @@ describe "V1::Gurus" do
       expect(response_json[:gurus].first[:id]).to eq(guru2.id)
       expect(response_json[:gurus].second[:id]).to eq(guru3.id)
       expect(response_json[:gurus].last[:id]).to eq(guru1.id)
+    end
+
+    it "error handling" do
+      allow(Guru).to receive(:all).and_raise(StandardError.new)
+      get("gurus_api/v1/gurus")
+
+      expect(last_response.status).to eq(500)
+      expect(response_json[:errors].count).to be(1)
+      expect(response_json[:errors][0][:code]).to be
+      expect(response_json[:errors][0][:description]).to be
+      expect(response_json[:errors][0][:backtrace]).to be
     end
   end
 
