@@ -160,6 +160,40 @@ describe "V1::Gurus" do
       expect(guru.writeup).to eq("my writeup")
     end
 
+    it "saves underscore in place of space in database" do
+      user_name = "AA BB cC dd"
+      user_uuid = generate_uuid
+      params = { guru:
+                     {
+                         username: user_name,
+                         userUuid: user_uuid,
+                         avatar: "my_image.jpg",
+                         pageTitle: "hello world",
+                         place: "chicago",
+                         writeup: "my writeup"
+                     }
+      }
+
+      expect { post "/gurus_api/v1/gurus", params.to_json }.to change(Guru, :count).by(1)
+
+      # API Checks
+      guru = response_json[:guru]
+      expect(guru[:userUuid]).to eq(user_uuid)
+      expect(guru[:username]).to eq("AA_BB_cC_dd")
+      expect(guru[:avatar]).to eq("my_image.jpg")
+      expect(guru[:pageTitle]).to eq("hello world")
+      expect(guru[:place]).to eq("chicago")
+      expect(guru[:writeup]).to eq("my writeup")
+      
+      # DB Checks
+      guru = Guru.find_by_user_uuid(user_uuid)
+      expect(guru.username).to eq("AA_BB_cC_dd")
+      expect(guru.avatar).to eq("my_image.jpg")
+      expect(guru.page_title).to eq("hello world")
+      expect(guru.place).to eq("chicago")
+      expect(guru.writeup).to eq("my writeup")
+    end
+
     it "raises 400 if inputs are not valid/missing" do
       post "gurus_api/v1/gurus"
 
