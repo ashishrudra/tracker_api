@@ -24,20 +24,33 @@ describe "V1::Followers" do
   end
 
   describe "GET /:user_uuid/gurus", :authenticated_user do
-    it "returns guru details when Guru is present" do
+    def create_guru_with_followers(followers_count)
+      guru = create_guru
+      followers_count.times do
+        guru.followers << Follower.create!(user_uuid: generate_uuid)
+      end
+      guru.reload
+    end
+
+    it "returns guru details sort by followers_count" do
       follower_uuid = generate_uuid
       follower = Follower.create!({ user_uuid: follower_uuid })
 
       guru_count = rand(10)
 
-      guru_count.times do
-        follower.gurus << create_guru
+      guru_count.times do |count|
+        follower.gurus << create_guru_with_followers(count)
       end
 
       get("gurus_api/v1/followers/#{follower_uuid}/gurus.json")
 
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(guru_count)
+      gurus = response_json[:gurus]
+
+      guru_count.times do |count|
+        expect(gurus[count][:followersCount]).to eq(guru_count-count)
+      end
     end
 
     it "returns 404 when follower is not present" do

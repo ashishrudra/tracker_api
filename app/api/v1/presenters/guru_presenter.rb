@@ -13,7 +13,7 @@ module GG
             {
               avatar: guru.avatar,
               deals: present_deals,
-              followersCount: guru.followers.count,
+              followersCount: guru.followers_count,
               id: guru.id,
               place: guru.place,
               pageTitle: guru.page_title,
