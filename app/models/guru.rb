@@ -19,6 +19,10 @@ class Guru < ActiveRecord::Base
 
       deal = Deal.find_or_create_by!({ deal_uuid: deal_uuid, permalink: permalink })
       guru_deal_mapping = GuruDeal.find_or_create_by!({ guru: guru, deal: deal })
+
+      if deal_params[:is_cover]
+        GuruDeal.where({ guru: guru }).update_all({ is_cover: false })
+      end
       guru_deal_mapping.update(deal_params.except(:uri))
 
       guru.reload
