@@ -39,7 +39,7 @@ class Guru < ActiveRecord::Base
     def add_follower(username, follower_params)
       guru = Guru.find_by_username!(username)
       follower = Follower.find_or_create_by!(follower_params)
-      GuruFollower.find_or_create_by!(guru: guru, follower: follower)
+      GuruFollower.find_or_create_by!({ guru: guru, follower: follower })
 
       guru.reload
     end
@@ -47,7 +47,7 @@ class Guru < ActiveRecord::Base
     def remove_follower(username, follower_uuid)
       guru = Guru.find_by_username!(username)
       follower = Follower.find_by_user_uuid!(follower_uuid)
-      GuruFollower.delete_all(guru: guru, follower: follower)
+      GuruFollower.delete_all({ guru: guru, follower: follower })
 
       guru.reload
     end

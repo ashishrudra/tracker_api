@@ -27,7 +27,7 @@ describe "V1::Followers" do
     def create_guru_with_followers(followers_count)
       guru = create_guru
       followers_count.times do
-        guru.followers << Follower.create!(user_uuid: generate_uuid)
+        guru.followers << Follower.create!({ user_uuid: generate_uuid })
       end
       guru.reload
     end
@@ -49,7 +49,7 @@ describe "V1::Followers" do
       gurus = response_json[:gurus]
 
       guru_count.times do |count|
-        expect(gurus[count][:followersCount]).to eq(guru_count-count)
+        expect(gurus[count][:followersCount]).to eq(guru_count - count)
       end
     end
 
@@ -78,6 +78,49 @@ describe "V1::Followers" do
 
     it "returns 404 when follower is not present" do
       get("gurus_api/v1/followers/#{generate_uuid}/deals.json")
+
+      expect(last_response.status).to eq(404)
+    end
+  end
+
+  describe "GET /:userUuid/following/:guruName", :authenticated_user do
+    it "returns true if following" do
+      follower_uuid = generate_uuid
+      guru_name = rand.to_s[2..13]
+      follower = Follower.create!({ user_uuid: follower_uuid })
+      guru = create_guru({ username: guru_name })
+      follower.gurus << guru
+
+      get("gurus_api/v1/followers/#{follower_uuid}/following/#{guru_name}.json")
+
+      expect(last_response.status).to eq(200)
+      expect(response_json[:isFollowing]).to be_truthy
+    end
+
+    it "returns false if not following" do
+      follower_uuid = generate_uuid
+      guru_name = rand.to_s[2..13]
+      Follower.create!({ user_uuid: follower_uuid })
+      create_guru({ username: guru_name })
+
+      get("gurus_api/v1/followers/#{follower_uuid}/following/#{guru_name}.json")
+
+      expect(last_response.status).to eq(200)
+      expect(response_json[:isFollowing]).to be_falsy
+    end
+
+    it "returns 404 when follower is not present" do
+      guru_name = rand.to_s[2..13]
+      create_guru({ username: guru_name })
+      get("gurus_api/v1/followers/#{generate_uuid}/following/#{guru_name}.json")
+
+      expect(last_response.status).to eq(404)
+    end
+
+    it "returns 404 when guru is not present" do
+      follower_uuid = generate_uuid
+      Follower.create!({ user_uuid: follower_uuid })
+      get("gurus_api/v1/followers/#{follower_uuid}/following/not_a_guru.json")
 
       expect(last_response.status).to eq(404)
     end

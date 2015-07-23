@@ -19,6 +19,10 @@ module GG
 
           { deals: deals }
         end
+
+        get "/:userUuid/following/:guruName" do
+          { isFollowing: Follower.is_following?(params[:userUuid], params[:guruName])}
+        end
       end
     end
   end
