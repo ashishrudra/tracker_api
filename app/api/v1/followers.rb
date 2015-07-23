@@ -25,7 +25,7 @@ module GG
           { isFollowing: Follower.is_following?(params[:userUuid], params[:guruName])}
         end
 
-        get "/:userUuid/recommended" do
+        get "/recommended" do
           gurus = Guru.recommended(params[:userUuid])
           { gurus: gurus.take(RECOMMENDED_LIMIT).sort_by(&:followers_count).reverse!.map { |guru| Presenters::GuruPresenter.new(guru).present } }
         end

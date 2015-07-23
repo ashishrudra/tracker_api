@@ -67,7 +67,7 @@ describe "V1::Followers" do
       following, not_following = create_guru, create_guru
       follower.gurus << following
 
-      get("gurus_api/v1/followers/#{follower_uuid}/recommended.json")
+      get("gurus_api/v1/followers/recommended?userUuid=#{follower_uuid}")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(1)
       gurus = response_json[:gurus]
@@ -80,7 +80,7 @@ describe "V1::Followers" do
       follower = Follower.create!({ user_uuid: follower_uuid })
       10.times { create_guru }
 
-      get("gurus_api/v1/followers/#{follower_uuid}/recommended.json")
+      get("gurus_api/v1/followers/recommended?userUuid=#{follower_uuid}")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(8)
     end
@@ -88,7 +88,7 @@ describe "V1::Followers" do
     it "returns all gurus when follower is not present" do
       8.times { create_guru }
 
-      get("gurus_api/v1/followers/null/recommended.json")
+      get("gurus_api/v1/followers/recommended")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(8)
     end
