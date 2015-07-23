@@ -35,6 +35,7 @@ module GG
             result
           end
 
+          guru_params[:username] = guru_params[:username].gsub(" ","_")
           guru = Guru.create!(guru_params)
           { guru: Presenters::GuruPresenter.new(guru).present }
         end
