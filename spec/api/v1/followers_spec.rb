@@ -60,6 +60,28 @@ describe "V1::Followers" do
     end
   end
 
+  describe "GET /:user_uuid/not_following", :authenticated_user do
+    it "returns all gurus that I'm not following" do
+      follower_uuid = generate_uuid
+      follower = Follower.create!({ user_uuid: follower_uuid })
+      following, not_following = create_guru, create_guru
+      follower.gurus << following
+
+      get("gurus_api/v1/followers/#{follower_uuid}/not_following.json")
+      expect(last_response.status).to eq(200)
+      expect(response_json[:gurus].count).to be(1)
+      gurus = response_json[:gurus]
+
+      expect(response_json[:gurus].first[:userUuid]).to eq(not_following.user_uuid)
+    end
+
+    it "returns 404 when follower is not present" do
+      get("gurus_api/v1/followers/#{generate_uuid}/not_following.json")
+
+      expect(last_response.status).to eq(404)
+    end
+  end
+
   describe "GET /:user_uuid/deals", :authenticated_user do
     it "returns 20 random deals" do
       follower_uuid = generate_uuid

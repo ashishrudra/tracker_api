@@ -23,6 +23,11 @@ module GG
         get "/:userUuid/following/:guruName" do
           { isFollowing: Follower.is_following?(params[:userUuid], params[:guruName])}
         end
+
+        get "/:userUuid/not_following" do
+          gurus = Guru.unfollowed(params[:userUuid])
+          { gurus: gurus.sort_by(&:followers_count).reverse!.map { |guru| Presenters::GuruPresenter.new(guru).present } }
+        end
       end
     end
   end
