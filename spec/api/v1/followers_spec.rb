@@ -13,10 +13,10 @@ describe "V1::Followers" do
                  }.merge!(explicit_params))
   end
 
-  def create_deal
+  def create_deal(explicit_params = {})
     Deal.create({ deal_uuid: generate_uuid,
                   permalink: rand.to_s[2..20]
-                })
+                }.merge!(explicit_params))
   end
 
   before(:each) do
@@ -98,6 +98,26 @@ describe "V1::Followers" do
 
       expect(last_response.status).to eq(200)
       expect(response_json[:deals].count).to be(4)
+    end
+
+    it "returns uniq deals" do
+      follower_uuid = generate_uuid
+      follower = Follower.create!({ user_uuid: follower_uuid })
+      deal_uuid1, deal_uuid2 = 2.times.collect { generate_uuid }
+
+      3.times do
+        guru = create_guru
+        guru.deals << create_deal(deal_uuid: deal_uuid1)
+        follower.gurus << guru
+      end
+
+      follower.gurus.first.deals << create_deal(deal_uuid: deal_uuid2)
+
+      get("gurus_api/v1/followers/#{follower_uuid}/deals.json")
+
+      expect(last_response.status).to eq(200)
+      expect(response_json[:deals].count).to be(2)
+      expect(response_json[:deals].map{ |d| d[:uuid]}.sort).to eq([deal_uuid1, deal_uuid2].sort)
     end
 
     it "returns 404 when follower is not present" do
