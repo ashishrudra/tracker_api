@@ -65,7 +65,7 @@ module GG
         params do
           requires :username, { allow_blank: false }
           requires :deal, { type: Hash } do
-            requires :uri, { allow_blank: false }
+            requires :uri, { groupon_uri: true, allow_blank: false }
             optional :isCover
             optional :notes
           end
