@@ -60,17 +60,18 @@ describe "V1::Followers" do
     end
   end
 
-  describe "GET /:user_uuid/recommended", :authenticated_user do
+  describe "GET /v1/followers/recommended", :authenticated_user do
     it "returns all gurus that I'm not following" do
       follower_uuid = generate_uuid
       follower = Follower.create!({ user_uuid: follower_uuid })
-      following, not_following = create_guru, create_guru
+      following = create_guru
+      not_following = create_guru
       follower.gurus << following
 
       get("gurus_api/v1/followers/recommended?userUuid=#{follower_uuid}")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(1)
-      gurus = response_json[:gurus]
+      response_json[:gurus]
 
       expect(response_json[:gurus].first[:userUuid]).to eq(not_following.user_uuid)
     end
@@ -81,6 +82,31 @@ describe "V1::Followers" do
       get("gurus_api/v1/followers/recommended")
       expect(last_response.status).to eq(200)
       expect(response_json[:gurus].count).to be(8)
+    end
+
+    it "does not return own profile if follower is a guru" do
+      follower_uuid = generate_uuid
+      follower = Follower.create!({ user_uuid: follower_uuid })
+      following = create_guru
+      not_following = create_guru
+      follower.gurus << following
+      create_guru({ user_uuid: follower_uuid })
+
+      get("gurus_api/v1/followers/recommended?userUuid=#{follower_uuid}")
+
+      expect(last_response.status).to eq(200)
+      expect(response_json[:gurus].count).to be(1)
+      expect(response_json[:gurus].first[:userUuid]).to eq(not_following.user_uuid)
+    end
+
+    it "does not return own profile for guru" do
+      user = create_guru
+      8.times.collect { create_guru }
+
+      get("gurus_api/v1/followers/recommended?userUuid=#{user.user_uuid}")
+      expect(last_response.status).to eq(200)
+      expect(response_json[:gurus].count).to be(8)
+      expect(response_json[:gurus].map { |g| g[:userUuid] }).not_to include(user.user_uuid)
     end
   end
 
@@ -107,17 +133,17 @@ describe "V1::Followers" do
 
       3.times do
         guru = create_guru
-        guru.deals << create_deal(deal_uuid: deal_uuid1)
+        guru.deals << create_deal({ deal_uuid: deal_uuid1 })
         follower.gurus << guru
       end
 
-      follower.gurus.first.deals << create_deal(deal_uuid: deal_uuid2)
+      follower.gurus.first.deals << create_deal({ deal_uuid: deal_uuid2 })
 
       get("gurus_api/v1/followers/#{follower_uuid}/deals.json")
 
       expect(last_response.status).to eq(200)
       expect(response_json[:deals].count).to be(2)
-      expect(response_json[:deals].map{ |d| d[:uuid]}.sort).to eq([deal_uuid1, deal_uuid2].sort)
+      expect(response_json[:deals].map { |d| d[:uuid] }.sort).to eq([deal_uuid1, deal_uuid2].sort)
     end
 
     it "returns 404 when follower is not present" do

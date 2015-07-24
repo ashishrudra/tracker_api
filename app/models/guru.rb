@@ -58,9 +58,11 @@ class Guru < ActiveRecord::Base
 
     def recommended(user_uuid = nil)
       follower = Follower.find_by_user_uuid(user_uuid)
-      return Guru.all unless follower
-      following = GuruFollower.where(follower: follower).map(&:guru_id)
-      Guru.where.not(id: following)
+      excluded_gurus = follower.nil? ? [] : GuruFollower.where(follower: follower).map(&:guru_id)
+      guru = Guru.find_by_user_uuid(user_uuid)
+      excluded_gurus << guru.id if guru
+
+      Guru.where.not(id: excluded_gurus)
     end
   end
 end
