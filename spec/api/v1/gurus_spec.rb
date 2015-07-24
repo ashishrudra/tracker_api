@@ -184,7 +184,7 @@ describe "V1::Gurus" do
       expect(guru[:pageTitle]).to eq("hello world")
       expect(guru[:place]).to eq("chicago")
       expect(guru[:writeup]).to eq("my writeup")
-      
+
       # DB Checks
       guru = Guru.find_by_user_uuid(user_uuid)
       expect(guru.username).to eq("AA_BB_cC_dd")
@@ -256,7 +256,7 @@ describe "V1::Gurus" do
   describe "POST /:username/deals", :authenticated_user do
     before(:each) do
       @permalink = rand.to_s[2..15]
-      deal_uri = "www.groupon.com/deals/#{@permalink}"
+      deal_uri = "http://www.staging.groupon.com/deals/#{@permalink}"
       @deal_params = { uri: deal_uri }
     end
 
@@ -311,6 +311,19 @@ describe "V1::Gurus" do
 
       expect(last_response.status).to eq(400)
       expect(response_json[:errors].first[:message]).to eq("Deal is not present for permalink #{@permalink}")
+    end
+
+    it "raises a 400 if a groupon url is not provided" do
+      user_name = rand.to_s[2..20]
+      create_guru({ username: user_name })
+      bad_uri = 'http://someotherplace.com/foo/bar'
+      deal_params = { uri: bad_uri }
+
+      expect(Clients::DealCatalog).to_not receive(:get_deal)
+      post "gurus_api/v1/gurus/#{user_name}/deals", { deal: deal_params }.to_json
+
+      expect(last_response.status).to eq(400)
+      expect(response_json[:errors].first[:message]).to eq("Please provide a valid Groupon Staging URL.")
     end
   end
 
