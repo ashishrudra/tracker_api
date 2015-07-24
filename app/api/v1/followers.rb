@@ -15,9 +15,10 @@ module GG
 
           deals = follower.gurus.map do |guru|
             guru.deals.map { |deal| Presenters::DealPresenter.new(deal, guru).present }
-          end.flatten.sample(DEALS_LIMIT)
+          end
 
-          { deals: deals }
+          sample_deals = deals.flatten.uniq{|d| d[:uuid] }.sample(DEALS_LIMIT)
+          { deals: sample_deals }
         end
 
         get "/:userUuid/following/:guruName" do
