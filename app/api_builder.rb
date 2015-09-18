@@ -1,7 +1,7 @@
 require "app/api"
 require "rack/cors"
 
-module GG
+module TA
   module API
     APP = Rack::Builder.new do
       use Rack::Cors do
@@ -13,11 +13,11 @@ module GG
 
       use(Sonoma::RequestId::Middleware)
       use(Sonoma::Monitor::Middleware)
-      run GG::API::Endpoints
+      run TA::API::Endpoints
     end
 
     BUILDER = Rack::Builder.new do
-      run Rack::Cascade.new([Sonoma::LocalConfig::Frontend, APP])
+      run Rack::Cascade.new([APP])
     end
   end
 end

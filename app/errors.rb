@@ -1,4 +1,4 @@
-module GG
+module TA
   module Errors
     class InvalidCondition < StandardError
       CODE = 400

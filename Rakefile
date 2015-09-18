@@ -4,7 +4,6 @@ $LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
 
 Dir.glob("./lib/tasks/*.rake").each { |r| import r }
 
-require "sonoma/active_record/database_tasks"
 
 task :environment do
   require "./initialize"

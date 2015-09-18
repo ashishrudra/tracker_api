@@ -7,14 +7,19 @@ Bundler.setup(:default)
 
 require "app/config"
 
-require "app/gg"
-Bundler.require(:default, GG.env.to_sym)
+require "app/ta"
+Bundler.require(:default, TA.env.to_sym)
 
-require "config/initializers/010_dotenv.rb"
+require 'virtus'
+require 'faraday'
+require 'faraday_middleware'
+require 'equalizer'
+require 'representable/json'
+require 'oj'
+require 'addressable/uri'
+require 'forwardable'
 
-Sonoma::ActiveRecord.boot!({ root: GG.root, schema_format: :sql })
-
-support_directories = %w(app/models config/initializers lib)
+support_directories = %w(lib config/initializers app/models)
 support_directories.each do |directory|
   Dir["#{directory}/**/*.rb"].sort.each do |file|
     require file

@@ -1,30 +1,23 @@
-require "app/api/v1/gurus"
-require "app/api/v1/followers"
 require "app/api/v1/presenters"
+require "app/api/v1/projects"
 require "app/api/v1/helpers/error_handler"
-require "app/api/v1/helpers/deal_helper"
 
-module GG
+module TA
   module API
     module V1
       class Endpoints < Grape::API
         helpers ErrorHandler
-        CLIENT_ERRORS = [ActiveRecord::RecordInvalid, Grape::Exceptions::ValidationErrors]
+        CLIENT_ERRORS = [ Grape::Exceptions::ValidationErrors]
 
         rescue_from(*CLIENT_ERRORS) do |error|
           ErrorHandler.respond(error, 400)
-        end
-
-        rescue_from(ActiveRecord::RecordNotFound) do |error|
-          ErrorHandler.respond(error, 404)
         end
 
         rescue_from(StandardError) do |error|
           ErrorHandler.respond(error)
         end
 
-        mount({ GG::API::V1::Gurus => :gurus })
-        mount({ GG::API::V1::Followers => :followers })
+        mount({ TA::API::V1::Projects => :projects })
       end
     end
   end

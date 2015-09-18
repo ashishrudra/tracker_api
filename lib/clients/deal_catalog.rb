@@ -4,9 +4,7 @@ module Clients
     ENDPOINT = "v1.deals.lookupId.lookup_id".freeze
 
     class << self
-      def get_deal(permalink)
-        response = ServiceDiscoveryClient::Request.fire!(SERVICE, ENDPOINT, { permalink: permalink })
-        response.body!
+      def get_deal(_permalink)
       end
     end
   end

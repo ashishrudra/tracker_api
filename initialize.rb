@@ -8,6 +8,6 @@ Bundler.setup(:default)
 require "app"
 Bundler.require(:default, GG.env.to_sym)
 
-Dir.glob("config/initializers/**/*").sort.each do |initializer|
-  require initializer
-end
+#Dir.glob("config/initializers/**/*").sort.each do |initializers|
+#  require initializers
+#end
